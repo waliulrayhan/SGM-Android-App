@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "736311733154",
+    "firebase_url": "https://sgm-android-test-default-rtdb.firebaseio.com",
+    "project_id": "sgm-android-test",
+    "storage_bucket": "sgm-android-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736311733154:android:05ccafaae822884ac060fb",
+        "android_client_info": {
+          "package_name": "com.go.sgm_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj7LSgC0_M_SU9PBugBlNAGvYCS6kf0vk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
