@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.go.sgm_android.Adapter.DistributorAdapter;
 import com.go.sgm_android.Adapter.PowerPlantAdapter;
 import com.go.sgm_android.databinding.FragmentHomeBinding;
+import com.go.sgm_android.model.Distributor;
 import com.go.sgm_android.model.PowerPlant;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +37,7 @@ public class HomeFragment extends Fragment {
     private Handler handler;
     private Runnable updateTimeRunnable;
     private PowerPlantAdapter powerPlantAdapter;
+    private DistributorAdapter distributorAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -98,12 +100,13 @@ public class HomeFragment extends Fragment {
         RecyclerView recyclerView2 = binding.distributorsRecyclerView;
         recyclerView2.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // Sample list of distributor names
-        List<String> distributors = Arrays.asList("Distributor 1", "Distributor 2", "Distributor 3");
 
+        // Initialize adapters
+        distributorAdapter = new DistributorAdapter(new ArrayList<>());
         // Set up adapter
-        DistributorAdapter adapter2 = new DistributorAdapter(distributors);
-        recyclerView2.setAdapter(adapter2);
+        recyclerView2.setAdapter(distributorAdapter);
+        // Fetch Distributor data from Firebase
+        fetchDistributorData();
 
         return root;
     }
@@ -133,6 +136,34 @@ public class HomeFragment extends Fragment {
                     powerPlants.add(new PowerPlant(name, currentCapacity, targetCapacity));
                 }
                 powerPlantAdapter.setPowerPlants(powerPlants);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled
+            }
+        });
+    }
+
+    private void fetchDistributorData() {
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Construct the Firebase reference path for the current date
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                .child("SGM").child(currentDate).child("distributors");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Distributor> distributors = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String name = snapshot.getKey();
+                    long currentDemand = snapshot.child("current_demand").getValue(Long.class);
+                    long targetDemand = snapshot.child("target_demand").getValue(Long.class);
+                    distributors.add(new Distributor(name, currentDemand, targetDemand));
+                }
+                distributorAdapter.setDistributors(distributors);
             }
 
             @Override

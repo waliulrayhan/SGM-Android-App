@@ -9,14 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.go.sgm_android.R;
+import com.go.sgm_android.model.Distributor;
 
 import java.util.List;
 
 public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.DistributorViewHolder> {
 
-    private List<String> distributors;
+    private List<Distributor> distributors;
 
-    public DistributorAdapter(List<String> distributors) {
+    public DistributorAdapter(List<Distributor> distributors) {
         this.distributors = distributors;
     }
 
@@ -37,16 +38,26 @@ public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.
         return distributors.size();
     }
 
+    public void setDistributors(List<Distributor> distributors) {
+        this.distributors = distributors;
+        notifyDataSetChanged(); // Notify RecyclerView that the data has changed
+    }
     static class DistributorViewHolder extends RecyclerView.ViewHolder {
         TextView distributorName;
+        TextView currentDemand;
+        TextView targetDemand;
 
         public DistributorViewHolder(@NonNull View itemView) {
             super(itemView);
             distributorName = itemView.findViewById(R.id.distributor_name);
+            currentDemand = itemView.findViewById(R.id.current_demand);
+            targetDemand = itemView.findViewById(R.id.target_demand);
         }
 
-        void bind(String distributor) {
-            distributorName.setText(distributor);
+        void bind(Distributor distributor) {
+            distributorName.setText(distributor.getDistributorName());
+            currentDemand.setText(String.valueOf(distributor.getCurrentDemand())); // Convert long to String
+            targetDemand.setText(String.valueOf(distributor.getTargetDemand())); // Convert long to String
         }
     }
 }
