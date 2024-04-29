@@ -85,12 +85,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/target_demand"
-        app:layout_constraintStart_toEndOf="@+id/target_demand"
-        app:layout_constraintTop_toTopOf="@+id/target_demand" />
+        app:layout_constraintBottom_toBottomOf="@+id/total_target_capacity"
+        app:layout_constraintStart_toEndOf="@+id/total_target_capacity"
+        app:layout_constraintTop_toTopOf="@+id/total_target_capacity" />
 
     <TextView
-        android:id="@+id/target_demand"
+        android:id="@+id/total_target_capacity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -105,12 +105,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/current_demand"
-        app:layout_constraintStart_toEndOf="@+id/current_demand"
-        app:layout_constraintTop_toTopOf="@+id/current_demand" />
+        app:layout_constraintBottom_toBottomOf="@+id/total_current_capacity"
+        app:layout_constraintStart_toEndOf="@+id/total_current_capacity"
+        app:layout_constraintTop_toTopOf="@+id/total_current_capacity" />
 
     <TextView
-        android:id="@+id/current_demand"
+        android:id="@+id/total_current_capacity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -185,7 +185,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView9" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/total_current_demand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -200,12 +200,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/textView12"
-        app:layout_constraintStart_toEndOf="@+id/textView12"
-        app:layout_constraintTop_toTopOf="@+id/textView12" />
+        app:layout_constraintBottom_toBottomOf="@+id/total_current_demand"
+        app:layout_constraintStart_toEndOf="@+id/total_current_demand"
+        app:layout_constraintTop_toTopOf="@+id/total_current_demand" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/total_target_demand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -220,12 +220,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/textView14"
-        app:layout_constraintStart_toEndOf="@+id/textView14"
-        app:layout_constraintTop_toTopOf="@+id/textView14" />
+        app:layout_constraintBottom_toBottomOf="@+id/total_target_demand"
+        app:layout_constraintStart_toEndOf="@+id/total_target_demand"
+        app:layout_constraintTop_toTopOf="@+id/total_target_demand" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/current_frequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -240,12 +240,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/textView16"
-        app:layout_constraintStart_toEndOf="@+id/textView16"
-        app:layout_constraintTop_toTopOf="@+id/textView16" />
+        app:layout_constraintBottom_toBottomOf="@+id/current_frequency"
+        app:layout_constraintStart_toEndOf="@+id/current_frequency"
+        app:layout_constraintTop_toTopOf="@+id/current_frequency" />
 
     <TextView
-        android:id="@+id/textView18"
+        android:id="@+id/fixed_frequency_BD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="45dp"
@@ -260,7 +260,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="MW"
-        app:layout_constraintBottom_toBottomOf="@+id/textView18"
-        app:layout_constraintStart_toEndOf="@+id/textView18"
-        app:layout_constraintTop_toTopOf="@+id/textView18" />
+        app:layout_constraintBottom_toBottomOf="@+id/fixed_frequency_BD"
+        app:layout_constraintStart_toEndOf="@+id/fixed_frequency_BD"
+        app:layout_constraintTop_toTopOf="@+id/fixed_frequency_BD" />
 </androidx.constraintlayout.widget.ConstraintLayout>

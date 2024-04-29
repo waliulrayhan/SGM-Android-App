@@ -108,7 +108,68 @@ public class HomeFragment extends Fragment {
         // Fetch Distributor data from Firebase
         fetchDistributorData();
 
+
+        //Fetch Total Data
+        fetchTotalData();
+
         return root;
+    }
+
+    private void fetchTotalData() {
+        TextView totalCurrentCapacity = binding.totalCurrentCapacity;
+        TextView totalTargetCapacity = binding.totalTargetCapacity;
+        TextView totalCurrentDemand = binding.totalCurrentDemand;
+        TextView totalTargetDemand = binding.totalTargetDemand;
+        TextView currentFrequency = binding.currentFrequency;
+        TextView fixedFrequency = binding.fixedFrequencyBD;
+
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Construct the Firebase reference path for the current date
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                .child("SGM").child(currentDate);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve totals node
+                    DataSnapshot totalsSnapshot = dataSnapshot.child("totals");
+
+                    // Retrieve capacity node
+                    DataSnapshot capacitySnapshot = totalsSnapshot.child("capacity");
+                    int totalCurrentCapacityValue = capacitySnapshot.child("total_current_capacity").getValue(Integer.class);
+                    int totalTargetCapacityValue = capacitySnapshot.child("total_target_capacity").getValue(Integer.class);
+
+                    // Retrieve demands node
+                    DataSnapshot demandsSnapshot = totalsSnapshot.child("demands");
+                    int totalCurrentDemandValue = demandsSnapshot.child("total_current_demand").getValue(Integer.class);
+                    int totalTargetDemandValue = demandsSnapshot.child("total_target_demand").getValue(Integer.class);
+
+                    // Retrieve frequency node
+                    DataSnapshot frequencySnapshot = totalsSnapshot.child("frequency");
+                    int currentFrequencyValue = frequencySnapshot.child("current_frequency").getValue(Integer.class);
+                    int fixedFrequencyBDValue = frequencySnapshot.child("fixed_frequency_BD").getValue(Integer.class);
+
+                    // Update UI with fetched values
+                    totalCurrentCapacity.setText(String.valueOf(totalCurrentCapacityValue));
+                    totalTargetCapacity.setText(String.valueOf(totalTargetCapacityValue));
+                    totalCurrentDemand.setText(String.valueOf(totalCurrentDemandValue));
+                    totalTargetDemand.setText(String.valueOf(totalTargetDemandValue));
+                    currentFrequency.setText(String.valueOf(currentFrequencyValue));
+                    fixedFrequency.setText(String.valueOf(fixedFrequencyBDValue));
+                } else {
+                    // Handle case when data doesn't exist
+                    // You can display a message or take appropriate action
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled
+            }
+        });
     }
 
     @Override
@@ -125,7 +186,7 @@ public class HomeFragment extends Fragment {
         // Construct the Firebase reference path for the current date
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
                 .child("SGM").child(currentDate).child("power_plants");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<PowerPlant> powerPlants = new ArrayList<>();
@@ -153,7 +214,7 @@ public class HomeFragment extends Fragment {
         // Construct the Firebase reference path for the current date
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
                 .child("SGM").child(currentDate).child("distributors");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Distributor> distributors = new ArrayList<>();
@@ -172,4 +233,5 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 }
