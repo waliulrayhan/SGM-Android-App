@@ -1,24 +1,24 @@
 package com.go.sgm_android;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.go.sgm_android.databinding.ActivityAddPowerPlantBinding;
+import com.go.sgm_android.model.PowerPlant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +28,15 @@ public class AddPowerPlantActivity extends AppCompatActivity {
 
     private ActivityAddPowerPlantBinding binding;
     private DatabaseReference mDatabase;
-    private AlertDialog progressDialog;
+    private AutoCompleteTextView autoCompleteTextViewDivision;
+    private AutoCompleteTextView autoCompleteTextViewDistrict;
+    private AutoCompleteTextView autoCompleteTextViewUpazilla;
+    private AutoCompleteTextView autoCompleteTextViewOperator;
+    private AutoCompleteTextView autoCompleteTextViewOwnership;
+    private AutoCompleteTextView autoCompleteTextViewFuelType;
+    private AutoCompleteTextView autoCompleteTextViewMethod;
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,71 +53,96 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         // Initialize Firebase Database
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Uploading Your Post");
-        builder.setMessage("Please wait...");
-        builder.setCancelable(false);
-        progressDialog = builder.create();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Adding Power Plant...");
+        progressDialog.setCancelable(false);
 
+        // Initialize AutoCompleteTextView
+        autoCompleteTextViewDivision = findViewById(R.id.autoCompleteTextViewDivision);
+        autoCompleteTextViewDistrict = findViewById(R.id.autoCompleteTextViewDistrict);
+        autoCompleteTextViewUpazilla = findViewById(R.id.autoCompleteTextViewUpazilla);
+        autoCompleteTextViewOperator = findViewById(R.id.autoCompleteTextViewOperator);
+        autoCompleteTextViewOwnership = findViewById(R.id.autoCompleteTextViewOwnership);
+        autoCompleteTextViewFuelType = findViewById(R.id.autoCompleteTextViewFuelType);
+        autoCompleteTextViewMethod = findViewById(R.id.autoCompleteTextViewMethod);
+
+        // Set up the adapter for AutoCompleteTextView
+        ArrayAdapter<String> divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.divisions_array));
+        autoCompleteTextViewDivision.setAdapter(divisionAdapter);
+
+        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.districts_array));
+        autoCompleteTextViewDistrict.setAdapter(districtAdapter);
+
+        ArrayAdapter<String> upazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.upazillas_array));
+        autoCompleteTextViewUpazilla.setAdapter(upazillaAdapter);
+
+        ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.operators_array));
+        autoCompleteTextViewOperator.setAdapter(operatorAdapter);
+
+        ArrayAdapter<String> ownershipAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.ownership_array));
+        autoCompleteTextViewOwnership.setAdapter(ownershipAdapter);
+
+        ArrayAdapter<String> fuelTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.fuel_types_array));
+        autoCompleteTextViewFuelType.setAdapter(fuelTypeAdapter);
+
+        ArrayAdapter<String> methodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.methods_array));
+        autoCompleteTextViewMethod.setAdapter(methodAdapter);
+
+// Handle button click
         binding.addPowerPlantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String division = autoCompleteTextViewDivision.getText().toString().trim();
+                String district = autoCompleteTextViewDistrict.getText().toString().trim();
+                String upazilla = autoCompleteTextViewUpazilla.getText().toString().trim();
+                String operator = autoCompleteTextViewOperator.getText().toString().trim();
+                String ownership = autoCompleteTextViewOwnership.getText().toString().trim();
+                String fuelType = autoCompleteTextViewFuelType.getText().toString().trim();
+                String method = autoCompleteTextViewMethod.getText().toString().trim();
+                String output = binding.outputEditText.getText().toString().trim();
                 String name = binding.addPowerPlantEditText.getText().toString().trim();
-                if (!name.isEmpty()) {
-                    // Show progress dialog
+
+                if (!division.isEmpty() && !district.isEmpty() && !upazilla.isEmpty() && !operator.isEmpty() && !ownership.isEmpty() && !fuelType.isEmpty() && !method.isEmpty() && !output.isEmpty() && !name.isEmpty()) {
+//                    Toast.makeText(AddPowerPlantActivity.this, "Hello "+division+district+upazilla+operator+ownership+fuelType+method+output+name, Toast.LENGTH_SHORT).show();
                     progressDialog.show();
-                    // Add power plant to Firebase Realtime Database
-                    addPowerPlantToDatabase(name);
+                    addPowerPlantToDatabase(division, district, upazilla, operator, ownership, fuelType, method, output, name);
                 } else {
-                    Toast.makeText(AddPowerPlantActivity.this, "Please enter a name", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddPowerPlantActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void addPowerPlantToDatabase(String name) {
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
+    private void addPowerPlantToDatabase(String division, String district, String upazilla, String operator,
+                                         String ownership, String fuelType, String method, String output, String name) {
 
-        // Reference to "SGM/currentDate/power_plants/name"
-        DatabaseReference powerPlantRef = mDatabase.child("SGM").child(currentDate).child("power_plants").child(name);
+        // Reference to "SGM/PowerPlant"
+        DatabaseReference powerPlantRef = mDatabase.child("SGM").child("PowerPlant").push();
 
-        // Perform transaction to set current capacity and target capacity to 0
-        powerPlantRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                // Ensure data is not null
-                if (mutableData.getValue() == null) {
-                    mutableData.child("current_capacity").setValue(0);
-                    mutableData.child("target_capacity").setValue(0);
-                }
-                return Transaction.success(mutableData);
-            }
+        // Create a map to store the power plant data
+        PowerPlant powerPlant = new PowerPlant(division, district, upazilla, operator, ownership, fuelType, method, output, name);
 
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                if (databaseError == null) {
-
-                    // Display success message
-                    Toast.makeText(AddPowerPlantActivity.this, "Power plant " + name + " added successfully", Toast.LENGTH_SHORT).show();
-                    // Start MainActivity
-                    Intent intent = new Intent(AddPowerPlantActivity.this, MainActivity.class);
-                    // Dismiss progress dialog
-                    progressDialog.dismiss();
-                    startActivity(intent);
-                    // Finish current activity to prevent going back to it when pressing back button from MainActivity
-                    finish();
-                } else {
-                    // Dismiss progress dialog
-                    progressDialog.dismiss();
-                    // Handle transaction error
-                    Toast.makeText(AddPowerPlantActivity.this, "Failed to add power plant: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        // Push the power plant data to the database
+        powerPlantRef.setValue(powerPlant)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        progressDialog.dismiss();
+                        Intent intent = new Intent(AddPowerPlantActivity.this, MainActivity.class);
+                        // Start SecondActivity
+                        startActivity(intent);
+                        Toast.makeText(AddPowerPlantActivity.this, "Power plant added successfully", Toast.LENGTH_SHORT).show();
+                        // Clear input fields after successful addition
+                        binding.addPowerPlantEditText.setText("");
+                        binding.outputEditText.setText("");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(AddPowerPlantActivity.this, "Failed to add power plant: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
-
-
 }

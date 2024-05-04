@@ -1,37 +1,122 @@
 package com.go.sgm_android.model;
 
 public class PowerPlant {
-    private String name;
-    private long currentCapacity;
-    private long targetCapacity;
+    private String PPdivision;
+    private String PPdistrict;
+    private String PPupazilla;
+    private String PPoperator;
+    private String PPownership;
+    private String PPfuelType;
+    private String PPmethod;
+    private String PPoutput;
+    private String PPname;
+    private String PPcurrentCapacity;
+    private String PPtargetCapacity;
 
-    public PowerPlant(String name, long currentCapacity, long targetCapacity) {
-        this.name = name;
-        this.currentCapacity = currentCapacity;
-        this.targetCapacity = targetCapacity;
+    public PowerPlant(String PPdivision, String PPdistrict, String PPupazilla, String PPoperator, String PPownership, String PPfuelType, String PPmethod, String PPoutput, String PPname) {
+        this.PPdivision = PPdivision;
+        this.PPdistrict = PPdistrict;
+        this.PPupazilla = PPupazilla;
+        this.PPoperator = PPoperator;
+        this.PPownership = PPownership;
+        this.PPfuelType = PPfuelType;
+        this.PPmethod = PPmethod;
+        this.PPoutput = PPoutput;
+        this.PPname = PPname;
     }
 
-    public String getName() {
-        return name;
+    public PowerPlant(String PPname, String PPcurrentCapacity, String PPoutput) {
+        this.PPname = PPname;
+        this.PPcurrentCapacity = PPcurrentCapacity;
+        this.PPoutput = PPoutput;
     }
 
-    public void setName(String name) {
-        this.name = name;
+
+    public String getPPname() {
+        return PPname;
     }
 
-    public long getCurrentCapacity() {
-        return currentCapacity;
+    public void setPPname(String PPname) {
+        this.PPname = PPname;
     }
 
-    public void setCurrentCapacity(long currentCapacity) {
-        this.currentCapacity = currentCapacity;
+    public String getPPdivision() {
+        return PPdivision;
     }
 
-    public long getTargetCapacity() {
-        return targetCapacity;
+    public void setPPdivision(String PPdivision) {
+        this.PPdivision = PPdivision;
     }
 
-    public void setTargetCapacity(long targetCapacity) {
-        this.targetCapacity = targetCapacity;
+    public String getPPdistrict() {
+        return PPdistrict;
+    }
+
+    public void setPPdistrict(String PPdistrict) {
+        this.PPdistrict = PPdistrict;
+    }
+
+    public String getPPupazilla() {
+        return PPupazilla;
+    }
+
+    public void setPPupazilla(String PPupazilla) {
+        this.PPupazilla = PPupazilla;
+    }
+
+    public String getPPoperator() {
+        return PPoperator;
+    }
+
+    public void setPPoperator(String PPoperator) {
+        this.PPoperator = PPoperator;
+    }
+
+    public String getPPownership() {
+        return PPownership;
+    }
+
+    public void setPPownership(String PPownership) {
+        this.PPownership = PPownership;
+    }
+
+    public String getPPfuelType() {
+        return PPfuelType;
+    }
+
+    public void setPPfuelType(String PPfuelType) {
+        this.PPfuelType = PPfuelType;
+    }
+
+    public String getPPmethod() {
+        return PPmethod;
+    }
+
+    public void setPPmethod(String PPmethod) {
+        this.PPmethod = PPmethod;
+    }
+
+    public String getPPoutput() {
+        return PPoutput;
+    }
+
+    public void setPPoutput(String PPoutput) {
+        this.PPoutput = PPoutput;
+    }
+
+    public String getPPcurrentCapacity() {
+        return PPcurrentCapacity;
+    }
+
+    public void setPPcurrentCapacity(String PPcurrentCapacity) {
+        this.PPcurrentCapacity = PPcurrentCapacity;
+    }
+
+    public String getPPtargetCapacity() {
+        return PPtargetCapacity;
+    }
+
+    public void setPPtargetCapacity(String PPtargetCapacity) {
+        this.PPtargetCapacity = PPtargetCapacity;
     }
 }

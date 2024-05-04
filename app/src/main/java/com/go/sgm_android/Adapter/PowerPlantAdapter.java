@@ -46,19 +46,19 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
     static class PowerPlantViewHolder extends RecyclerView.ViewHolder {
         TextView powerPlantName;
         TextView currentCapacity;
-        TextView targetCapacity;
+        TextView maxCapacity;
 
         public PowerPlantViewHolder(@NonNull View itemView) {
             super(itemView);
-            powerPlantName = itemView.findViewById(R.id.power_plant_name);
-            currentCapacity = itemView.findViewById(R.id.current_capacity); // Assuming these are the ids in your item layout
-            targetCapacity = itemView.findViewById(R.id.target_capacity); // Assuming these are the ids in your item layout
+            powerPlantName = itemView.findViewById(R.id.PP_name);
+            currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity); // Assuming these are the ids in your item layout
+            maxCapacity = itemView.findViewById(R.id.PP_Max_Output); // Assuming these are the ids in your item layout
         }
 
         void bind(PowerPlant powerPlant) {
-            powerPlantName.setText(powerPlant.getName());
-            currentCapacity.setText(String.valueOf(powerPlant.getCurrentCapacity())); // Convert long to String
-            targetCapacity.setText(String.valueOf(powerPlant.getTargetCapacity())); // Convert long to String
+            powerPlantName.setText(powerPlant.getPPname());
+            currentCapacity.setText("Current Capacity: "+powerPlant.getPPcurrentCapacity()+" MW"); // Convert long to String
+            maxCapacity.setText("Max Output: "+powerPlant.getPPoutput()+" MW"); // Convert long to String
         }
     }
 }
