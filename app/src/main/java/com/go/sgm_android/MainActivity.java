@@ -1,7 +1,5 @@
 package com.go.sgm_android;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -9,26 +7,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.Toast;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
+import com.go.sgm_android.ui.history.HistoryFragment;
+import com.go.sgm_android.ui.home.HomeFragment;
+import com.go.sgm_android.ui.slideshow.SlideshowFragment;
+import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.go.sgm_android.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private Boolean isAllFabVisible = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,25 +25,44 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.appBarMain.toolbar);
+        setSupportActionBar(binding.toolbar);
 
         // Set the title of the activity
         setTitle("Real Time Grid Information");
 
-        binding.appBarMain.fabAddPowerPlant.setVisibility(View.GONE);
-        binding.appBarMain.fabAddDistributor.setVisibility(View.GONE);
-        binding.appBarMain.AddPowerPlantText.setVisibility(View.GONE);
-        binding.appBarMain.AddDistributorText.setVisibility(View.GONE);
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            if (item.getItemId() == R.id.item_1) {
+                    selectedFragment = new HomeFragment();
+                } else if (item.getItemId() == R.id.item_2) {
+                    selectedFragment = new HistoryFragment();
+                } else if (item.getItemId() == R.id.item_3) {
+                    selectedFragment = new SlideshowFragment();
+                }
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            }
+            return true;
+        });
+
+        // Set default fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+
+
+        binding.fabAddPowerPlant.setVisibility(View.GONE);
+        binding.fabAddDistributor.setVisibility(View.GONE);
+        binding.AddPowerPlantText.setVisibility(View.GONE);
+        binding.AddDistributorText.setVisibility(View.GONE);
 
         // Set click listener for the main FAB
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggleFABs();
             }
         });
 
-        binding.appBarMain.fabAddPowerPlant.setOnClickListener(new View.OnClickListener() {
+        binding.fabAddPowerPlant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
@@ -64,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.appBarMain.AddPowerPlantText.setOnClickListener(new View.OnClickListener() {
+        binding.AddPowerPlantText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
@@ -74,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.appBarMain.fabAddDistributor.setOnClickListener(new View.OnClickListener() {
+        binding.fabAddDistributor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(MainActivity.this, "Hello, Add Distributor", Toast.LENGTH_SHORT).show();
@@ -84,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.appBarMain.AddDistributorText.setOnClickListener(new View.OnClickListener() {
+        binding.AddDistributorText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(MainActivity.this, "Hello, Add Distributor", Toast.LENGTH_SHORT).show();
@@ -95,26 +103,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Set touch listener for the blur overlay
-        binding.appBarMain.blurOverlay.setOnTouchListener(new View.OnTouchListener() {
+        binding.blurOverlay.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 hideFABs();
                 return true;
             }
         });
-
-
-//        DrawerLayout drawer = binding.drawerLayout;
-//        NavigationView navigationView = binding.navView;
-//        // Passing each menu ID as a set of Ids because each
-//        // menu should be considered as top level destinations.
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-//                .setOpenableLayout(drawer)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-//        NavigationUI.setupWithNavController(navigationView, navController);
     }
 
     @Override
@@ -140,19 +135,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+        if (id == R.id.test_menu) {
+            // Handle click on Messenger menu item
+            Intent intent = new Intent(MainActivity.this, TestActivity.class);
+            startActivity(intent);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-//    @Override
-//    public boolean onSupportNavigateUp() {
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-//                || super.onSupportNavigateUp();
-//    }
 
     // Method to toggle visibility of additional FABs
     private void toggleFABs() {
@@ -165,35 +156,35 @@ public class MainActivity extends AppCompatActivity {
 
     // Method to show additional FABs and blur overlay with animation
     private void showFABs() {
-        binding.appBarMain.fabAddDistributor.setVisibility(View.VISIBLE);
-        binding.appBarMain.fabAddPowerPlant.setVisibility(View.VISIBLE);
-        binding.appBarMain.AddDistributorText.setVisibility(View.VISIBLE);
-        binding.appBarMain.AddPowerPlantText.setVisibility(View.VISIBLE);
-        binding.appBarMain.blurOverlay.setVisibility(View.VISIBLE);
+        binding.fabAddDistributor.setVisibility(View.VISIBLE);
+        binding.fabAddPowerPlant.setVisibility(View.VISIBLE);
+        binding.AddDistributorText.setVisibility(View.VISIBLE);
+        binding.AddPowerPlantText.setVisibility(View.VISIBLE);
+        binding.blurOverlay.setVisibility(View.VISIBLE);
 
         // Animate translationY
         float translationY = getResources().getDimension(R.dimen.fab_translation_y);
-        binding.appBarMain.fabAddDistributor.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.fabAddPowerPlant.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.AddDistributorText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.AddPowerPlantText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.fabAddDistributor.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.fabAddPowerPlant.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.AddDistributorText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.AddPowerPlantText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
 
         isAllFabVisible = true;
     }
 
     // Method to hide additional FABs and blur overlay with animation
     private void hideFABs() {
-        binding.appBarMain.fabAddDistributor.setVisibility(View.GONE);
-        binding.appBarMain.fabAddPowerPlant.setVisibility(View.GONE);
-        binding.appBarMain.AddDistributorText.setVisibility(View.GONE);
-        binding.appBarMain.AddPowerPlantText.setVisibility(View.GONE);
-        binding.appBarMain.blurOverlay.setVisibility(View.GONE);
+        binding.fabAddDistributor.setVisibility(View.GONE);
+        binding.fabAddPowerPlant.setVisibility(View.GONE);
+        binding.AddDistributorText.setVisibility(View.GONE);
+        binding.AddPowerPlantText.setVisibility(View.GONE);
+        binding.blurOverlay.setVisibility(View.GONE);
 
         // Animate translationY
-        binding.appBarMain.fabAddDistributor.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.fabAddPowerPlant.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.AddDistributorText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        binding.appBarMain.AddPowerPlantText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.fabAddDistributor.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.fabAddPowerPlant.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.AddDistributorText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        binding.AddPowerPlantText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
 
         isAllFabVisible = false;
     }

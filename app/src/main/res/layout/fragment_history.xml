@@ -18,6 +18,7 @@
         android:text="Search Date"
         android:textColor="@color/black"
         android:textColorLink="#03A9F4"
+        android:shadowColor="@color/black"
         android:textSize="16sp"
         app:icon="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"

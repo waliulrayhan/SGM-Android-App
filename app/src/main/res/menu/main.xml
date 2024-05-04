@@ -4,15 +4,19 @@
 
     <item
         android:id="@+id/search_menu"
-        android:orderInCategory="100"
         android:icon="@drawable/search_fill"
         app:showAsAction="always"
         android:title="TODO" />
 
     <item
         android:id="@+id/profile_menu"
-        android:orderInCategory="100"
         android:icon="@drawable/user"
+        app:showAsAction="always"
+        android:title="TODO" />
+
+    <item
+        android:id="@+id/test_menu"
+        android:icon="@drawable/bug_report_fill"
         app:showAsAction="always"
         android:title="TODO" />
 </menu>
