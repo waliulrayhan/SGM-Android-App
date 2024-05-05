@@ -9,11 +9,11 @@
     <item
         android:id="@+id/item_2"
         android:enabled="true"
-        android:icon="@drawable/history"
-        android:title="History"/>
+        android:icon="@drawable/baseline_add_24"
+        android:title="Add"/>
     <item
         android:id="@+id/item_3"
         android:enabled="true"
-        android:icon="@drawable/bug_report_fill"
-        android:title="Test"/>
+        android:icon="@drawable/history"
+        android:title="History"/>
 </menu>

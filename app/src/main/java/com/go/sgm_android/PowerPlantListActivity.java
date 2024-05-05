@@ -42,7 +42,7 @@ public class PowerPlantListActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(getResources().getColor(R.color.glitter_lake));
 
         // Set the title of the activity
-        setTitle("List of all Power Plant");
+        setTitle("List of Running Power Plant");
 
         //==========================================================================================
         // This is for Power Plant Recycler View

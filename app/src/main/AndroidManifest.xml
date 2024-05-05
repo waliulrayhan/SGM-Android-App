@@ -13,9 +13,13 @@
         android:theme="@style/Theme.SGMAndroid"
         tools:targetApi="31">
         <activity
-            android:name=".PowerPlantListActivity"
+            android:name=".DistributorListActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".PowerPlantListActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".TestActivity"
             android:exported="false"

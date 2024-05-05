@@ -21,6 +21,31 @@
         <item>Sylhet</item>
     </string-array>
 
+    <string-array name="barishal_divisions_array">
+        <item>Barguna</item>
+        <item>Barishal</item>
+        <item>Bhola</item>
+        <item>Jhalokati</item>
+        <item>Patuakhali</item>
+        <item>Pirojpur</item>
+    </string-array>
+
+    <string-array name="chattogram_divisions_array">
+        <item>Bandarban</item>
+        <item>Brahmanbaria</item>
+        <item>Chandpur</item>
+        <item>Chittagong</item>
+        <item>Comilla</item>
+        <item>Cox\'s Bazar</item>
+        <item>Feni</item>
+        <item>Khagrachhari</item>
+        <item>Lakshmipur</item>
+        <item>Noakhali</item>
+        <item>Rangamati</item>
+    </string-array>
+
+
+
     <string-array name="districts_array">
         <item>Bagerhat</item>
         <item>Bandarban</item>

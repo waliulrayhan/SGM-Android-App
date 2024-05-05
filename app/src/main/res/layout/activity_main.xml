@@ -48,58 +48,58 @@
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_navigation_menu" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/baseline_add_24"
-            app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:maxImageSize="30dp" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="24dp"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            android:src="@drawable/baseline_add_24"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/fragment_container"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:maxImageSize="30dp" />-->
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddPowerPlant"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/electricfactory"
-            app:backgroundTint="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/fab"
-            app:layout_constraintEnd_toEndOf="@+id/fab"
-            app:maxImageSize="35dp" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fabAddPowerPlant"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/electricfactory"-->
+<!--            app:backgroundTint="#FFFFFF"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/fab"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/fab"-->
+<!--            app:maxImageSize="35dp" />-->
 
-        <TextView
-            android:id="@+id/AddPowerPlantText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Add Power Plant"
-            android:textColor="#00BCD4"
-            app:layout_constraintBottom_toBottomOf="@+id/fabAddPowerPlant"
-            app:layout_constraintEnd_toStartOf="@+id/fabAddPowerPlant"
-            app:layout_constraintTop_toTopOf="@+id/fabAddPowerPlant" />
+<!--        <TextView-->
+<!--            android:id="@+id/AddPowerPlantText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:text="Add Power Plant"-->
+<!--            android:textColor="#00BCD4"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/fabAddPowerPlant"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/fabAddPowerPlant"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/fabAddPowerPlant" />-->
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddDistributor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/smartgrid"
-            app:backgroundTint="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/fabAddPowerPlant"
-            app:layout_constraintEnd_toEndOf="@+id/fabAddPowerPlant"
-            app:maxImageSize="40dp" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fabAddDistributor"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            android:src="@drawable/smartgrid"-->
+<!--            app:backgroundTint="#FFFFFF"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/fabAddPowerPlant"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/fabAddPowerPlant"-->
+<!--            app:maxImageSize="40dp" />-->
 
-        <TextView
-            android:id="@+id/AddDistributorText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Add Distributor"
-            android:textColor="#00BCD4"
-            app:layout_constraintBottom_toBottomOf="@+id/fabAddDistributor"
-            app:layout_constraintEnd_toStartOf="@+id/fabAddDistributor"
-            app:layout_constraintTop_toTopOf="@+id/fabAddDistributor" />
+<!--        <TextView-->
+<!--            android:id="@+id/AddDistributorText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:text="Add Distributor"-->
+<!--            android:textColor="#00BCD4"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/fabAddDistributor"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/fabAddDistributor"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/fabAddDistributor" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

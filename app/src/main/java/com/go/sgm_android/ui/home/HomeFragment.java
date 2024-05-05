@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.go.sgm_android.Adapter.DistributorAdapter;
 import com.go.sgm_android.Adapter.PowerPlantAdapter;
 import com.go.sgm_android.AddPowerPlantActivity;
+import com.go.sgm_android.DistributorListActivity;
 import com.go.sgm_android.MainActivity;
 import com.go.sgm_android.PowerPlantListActivity;
 import com.go.sgm_android.databinding.FragmentHomeBinding;
@@ -89,6 +90,15 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
+                // Start SecondActivity
+                startActivity(intent);
+            }
+        });
+
+        binding.DD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), DistributorListActivity.class);
                 // Start SecondActivity
                 startActivity(intent);
             }
