@@ -55,9 +55,9 @@ public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.
         }
 
         void bind(Distributor distributor) {
-            distributorName.setText(distributor.getDistributorName());
-            currentDemand.setText(String.valueOf(distributor.getCurrentDemand())); // Convert long to String
-            targetDemand.setText(String.valueOf(distributor.getTargetDemand())); // Convert long to String
+//            distributorName.setText(distributor.getDistributorName());
+//            currentDemand.setText(String.valueOf(distributor.getCurrentDemand())); // Convert long to String
+//            targetDemand.setText(String.valueOf(distributor.getTargetDemand())); // Convert long to String
         }
     }
 }

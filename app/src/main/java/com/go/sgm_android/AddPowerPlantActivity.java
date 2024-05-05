@@ -34,6 +34,10 @@ public class AddPowerPlantActivity extends AppCompatActivity {
     private AutoCompleteTextView autoCompleteTextViewFuelType;
     private AutoCompleteTextView autoCompleteTextViewMethod;
     private ProgressDialog progressDialog;
+    // Define variables to keep track of the previously selected division and district
+    private String previousDivision = "";
+    private String previousDistrict = "";
+
     private ArrayAdapter<String> divisionAdapter, districtAdapter, upazillaAdapter;
 
     // Define your divisions, districts, and upazillas arrays here

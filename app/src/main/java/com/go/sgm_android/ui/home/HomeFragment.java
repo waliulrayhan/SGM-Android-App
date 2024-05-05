@@ -230,32 +230,32 @@ public class HomeFragment extends Fragment {
 //        });
 //    }
 
-    private void fetchDistributorData() {
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
-
-        // Construct the Firebase reference path for the current date
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-                .child("SGM").child(currentDate).child("distributors");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Distributor> distributors = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String name = snapshot.getKey();
-                    long currentDemand = snapshot.child("current_demand").getValue(Long.class);
-                    long targetDemand = snapshot.child("target_demand").getValue(Long.class);
-                    distributors.add(new Distributor(name, currentDemand, targetDemand));
-                }
-                distributorAdapter.setDistributors(distributors);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle onCancelled
-            }
-        });
-    }
+//    private void fetchDistributorData() {
+//        // Get the current date
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+//        String currentDate = dateFormat.format(new Date());
+//
+//        // Construct the Firebase reference path for the current date
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+//                .child("SGM").child(currentDate).child("distributors");
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                List<Distributor> distributors = new ArrayList<>();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    String name = snapshot.getKey();
+//                    long currentDemand = snapshot.child("current_demand").getValue(Long.class);
+//                    long targetDemand = snapshot.child("target_demand").getValue(Long.class);
+//                    distributors.add(new Distributor(name, currentDemand, targetDemand));
+//                }
+//                distributorAdapter.setDistributors(distributors);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                // Handle onCancelled
+//            }
+//        });
+//    }
 
 }

@@ -1,37 +1,73 @@
 package com.go.sgm_android.model;
 
 public class Distributor {
-    private String distributorName;
-    private long currentDemand;
-    private long targetDemand;
+    private String DDdistributor;
+    private String DDzone;
+    private String DDcircle;
+    private String DDname;
+    private String DDcurrentDemand;
+    private String DDtargetDemand;
 
-    public Distributor(String distributorName, long currentDemand, long targetDemand) {
-        this.distributorName = distributorName;
-        this.currentDemand = currentDemand;
-        this.targetDemand = targetDemand;
+    public Distributor(String DDdistributor, String DDzone, String DDcircle, String DDname) {
+        this.DDdistributor = DDdistributor;
+        this.DDzone = DDzone;
+        this.DDcircle = DDcircle;
+        this.DDname = DDname;
+    }
+    public Distributor(String DDdistributor, String DDzone, String DDcircle, String DDname, String DDcurrentDemand, String DDtargetDemand) {
+        this.DDdistributor = DDdistributor;
+        this.DDzone = DDzone;
+        this.DDcircle = DDcircle;
+        this.DDname = DDname;
+        this.DDcurrentDemand = DDcurrentDemand;
+        this.DDtargetDemand = DDtargetDemand;
     }
 
-    public String getDistributorName() {
-        return distributorName;
+    public String getDDdistributor() {
+        return DDdistributor;
     }
 
-    public void setDistributorName(String distributorName) {
-        this.distributorName = distributorName;
+    public void setDDdistributor(String DDdistributor) {
+        this.DDdistributor = DDdistributor;
     }
 
-    public long getCurrentDemand() {
-        return currentDemand;
+    public String getDDzone() {
+        return DDzone;
     }
 
-    public void setCurrentDemand(long currentDemand) {
-        this.currentDemand = currentDemand;
+    public void setDDzone(String DDzone) {
+        this.DDzone = DDzone;
     }
 
-    public long getTargetDemand() {
-        return targetDemand;
+    public String getDDcircle() {
+        return DDcircle;
     }
 
-    public void setTargetDemand(long targetDemand) {
-        this.targetDemand = targetDemand;
+    public void setDDcircle(String DDcircle) {
+        this.DDcircle = DDcircle;
+    }
+
+    public String getDDname() {
+        return DDname;
+    }
+
+    public void setDDname(String DDname) {
+        this.DDname = DDname;
+    }
+
+    public String getDDcurrentDemand() {
+        return DDcurrentDemand;
+    }
+
+    public void setDDcurrentDemand(String DDcurrentDemand) {
+        this.DDcurrentDemand = DDcurrentDemand;
+    }
+
+    public String getDDtargetDemand() {
+        return DDtargetDemand;
+    }
+
+    public void setDDtargetDemand(String DDtargetDemand) {
+        this.DDtargetDemand = DDtargetDemand;
     }
 }
