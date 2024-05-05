@@ -2,24 +2,43 @@ package com.go.sgm_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Toast;
 
+import com.go.sgm_android.model.PowerPlant;
 import com.go.sgm_android.ui.add.AddFragment;
 import com.go.sgm_android.ui.history.HistoryFragment;
 import com.go.sgm_android.ui.home.HomeFragment;
 import com.go.sgm_android.ui.slideshow.SlideshowFragment;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 import com.go.sgm_android.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private Boolean isAllFabVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,67 +70,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
 
 
-//        binding.fabAddPowerPlant.setVisibility(View.GONE);
-//        binding.fabAddDistributor.setVisibility(View.GONE);
-//        binding.AddPowerPlantText.setVisibility(View.GONE);
-//        binding.AddDistributorText.setVisibility(View.GONE);
-//
-//        // Set click listener for the main FAB
-//        binding.fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                toggleFABs();
-//            }
-//        });
-//
-//        binding.fabAddPowerPlant.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(MainActivity.this, AddPowerPlantActivity.class);
-//                // Start SecondActivity
-//                startActivity(intent);
-//            }
-//        });
-//
-//        binding.AddPowerPlantText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(MainActivity.this, AddPowerPlantActivity.class);
-//                // Start SecondActivity
-//                startActivity(intent);
-//            }
-//        });
-//
-//        binding.fabAddDistributor.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                Toast.makeText(MainActivity.this, "Hello, Add Distributor", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(MainActivity.this, AddDistributorActivity.class);
-//                // Start SecondActivity
-//                startActivity(intent);
-//            }
-//        });
-//
-//        binding.AddDistributorText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                Toast.makeText(MainActivity.this, "Hello, Add Distributor", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(MainActivity.this, AddDistributorActivity.class);
-//                // Start SecondActivity
-//                startActivity(intent);
-//            }
-//        });
-//
-//        // Set touch listener for the blur overlay
-//        binding.blurOverlay.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                hideFABs();
-//                return true;
-//            }
-//        });
     }
 
     @Override
@@ -139,55 +97,98 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.test_menu) {
             // Handle click on Messenger menu item
-            Intent intent = new Intent(MainActivity.this, TestActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(MainActivity.this, TestActivity.class);
+//            startActivity(intent);
+
+            Toast.makeText(MainActivity.this, "Test: Data Uploading", Toast.LENGTH_LONG).show();
+            uploadDataToFirebase1();
+            uploadDataToFirebase2();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-//    // Method to toggle visibility of additional FABs
-//    private void toggleFABs() {
-//        if (!isAllFabVisible) {
-//            showFABs();
-//        } else {
-//            hideFABs();
-//        }
-//    }
+    private void uploadDataToFirebase1() {
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
 
-//    // Method to show additional FABs and blur overlay with animation
-//    private void showFABs() {
-//        binding.fabAddDistributor.setVisibility(View.VISIBLE);
-//        binding.fabAddPowerPlant.setVisibility(View.VISIBLE);
-//        binding.AddDistributorText.setVisibility(View.VISIBLE);
-//        binding.AddPowerPlantText.setVisibility(View.VISIBLE);
-//        binding.blurOverlay.setVisibility(View.VISIBLE);
-//
-//        // Animate translationY
-//        float translationY = getResources().getDimension(R.dimen.fab_translation_y);
-//        binding.fabAddDistributor.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.fabAddPowerPlant.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.AddDistributorText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.AddPowerPlantText.animate().translationY(-translationY).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//
-//        isAllFabVisible = true;
-//    }
-//
-//    // Method to hide additional FABs and blur overlay with animation
-//    private void hideFABs() {
-//        binding.fabAddDistributor.setVisibility(View.GONE);
-//        binding.fabAddPowerPlant.setVisibility(View.GONE);
-//        binding.AddDistributorText.setVisibility(View.GONE);
-//        binding.AddPowerPlantText.setVisibility(View.GONE);
-//        binding.blurOverlay.setVisibility(View.GONE);
-//
-//        // Animate translationY
-//        binding.fabAddDistributor.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.fabAddPowerPlant.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.AddDistributorText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//        binding.AddPowerPlantText.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
-//
-//        isAllFabVisible = false;
-//    }
+        // Reference to "SGM/PowerPlant"
+        DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+
+        powerPlantRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.exists()) {
+                        String uniqueKey = snapshot.getKey();
+                        DatabaseReference dateRef = snapshot.child("PP-Date").child(currentDate).getRef();
+
+                        // Create data map for dateRef
+                        Map<String, Object> dataMap = new HashMap<>();
+                        dataMap.put("capacity", new HashMap<String, Object>() {{
+                            put("ppcurrentCapacity", "null");
+                            put("pptargetCapacity", "null");
+                        }});
+                        dataMap.put("history", new HashMap<String, Object>() {{
+                            put("pptotalCurrentCapacity", "null");
+                            put("last_update_time", "11:59:59 PM");
+                        }});
+                        dataMap.put("alert", "false");
+
+                        // Set data to dateRef
+                        dateRef.setValue(dataMap)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            // Data uploaded successfully
+                                            // Handle success if needed
+                                        } else {
+                                            // Data upload failed
+                                            // Handle failure if needed
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled event if needed
+            }
+        });
+    }
+
+    private void uploadDataToFirebase2() {
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Reference to "SGM/PowerPlant/Date/currentDate/total"
+        DatabaseReference totalRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant").child("Date").child(currentDate).child("total");
+
+        // Create data map for totalRef
+        Map<String, Object> totalMap = new HashMap<>();
+        totalMap.put("AllppcurrentCapacity", "null");
+        totalMap.put("AllpptargetCapacity", "null");
+
+        // Set data to totalRef
+        totalRef.setValue(totalMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Data uploaded successfully
+                            // Handle success if needed
+                        } else {
+                            // Data upload failed
+                            // Handle failure if needed
+                        }
+                    }
+                });
+    }
+
 }
