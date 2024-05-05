@@ -134,7 +134,7 @@ public class AddDistributorActivity extends AppCompatActivity {
 
     private void addDistributorToDatabase(String distributor, String zone, String circle, String name) {
         // Reference to "SGM/PowerPlant"
-        DatabaseReference distributorRef = mDatabase.child("SGM").child("Distributor").push();
+        DatabaseReference distributorRef = mDatabase.child("SGM").child("Distributor").child(distributor).push();
 
         // Create a map to store the power plant data
         Distributor distributor1 = new Distributor(distributor, zone, circle, name);
