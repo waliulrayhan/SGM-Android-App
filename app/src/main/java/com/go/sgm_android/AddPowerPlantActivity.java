@@ -28,16 +28,12 @@ public class AddPowerPlantActivity extends AppCompatActivity {
 
     private ActivityAddPowerPlantBinding binding;
     private DatabaseReference mDatabase;
-//    private AutoCompleteTextView autoCompleteTextViewDivision;
-//    private AutoCompleteTextView autoCompleteTextViewDistrict;
-//    private AutoCompleteTextView autoCompleteTextViewUpazilla;
+    private AutoCompleteTextView divisionAutoCompleteTextView, districtAutoCompleteTextView, upazillaAutoCompleteTextView;
     private AutoCompleteTextView autoCompleteTextViewOperator;
     private AutoCompleteTextView autoCompleteTextViewOwnership;
     private AutoCompleteTextView autoCompleteTextViewFuelType;
     private AutoCompleteTextView autoCompleteTextViewMethod;
     private ProgressDialog progressDialog;
-
-    private AutoCompleteTextView divisionAutoCompleteTextView, districtAutoCompleteTextView, upazillaAutoCompleteTextView;
     private ArrayAdapter<String> divisionAdapter, districtAdapter, upazillaAdapter;
 
     // Define your divisions, districts, and upazillas arrays here
@@ -89,25 +85,10 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         divisionAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDivision);
         districtAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDistrict);
         upazillaAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewUpazilla);
-
-        // Initialize AutoCompleteTextView
-//        autoCompleteTextViewDivision = findViewById(R.id.autoCompleteTextViewDivision);
-//        autoCompleteTextViewDistrict = findViewById(R.id.autoCompleteTextViewDistrict);
-//        autoCompleteTextViewUpazilla = findViewById(R.id.autoCompleteTextViewUpazilla);
         autoCompleteTextViewOperator = findViewById(R.id.autoCompleteTextViewOperator);
         autoCompleteTextViewOwnership = findViewById(R.id.autoCompleteTextViewOwnership);
         autoCompleteTextViewFuelType = findViewById(R.id.autoCompleteTextViewFuelType);
         autoCompleteTextViewMethod = findViewById(R.id.autoCompleteTextViewMethod);
-
-//        // Set up the adapter for AutoCompleteTextView
-//        ArrayAdapter<String> divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.divisions_array));
-//        autoCompleteTextViewDivision.setAdapter(divisionAdapter);
-//
-//        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.districts_array));
-//        autoCompleteTextViewDistrict.setAdapter(districtAdapter);
-//
-//        ArrayAdapter<String> upazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.upazillas_array));
-//        autoCompleteTextViewUpazilla.setAdapter(upazillaAdapter);
 
         // Initialize Adapters
         divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, divisions);
@@ -124,6 +105,13 @@ public class AddPowerPlantActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 updateDistrictAutoCompleteTextView(position);
+                // Clear the text of the district AutoCompleteTextView when division changes
+                districtAutoCompleteTextView.setText("");
+                // Clear the text of the upazilla AutoCompleteTextView when division changes
+                upazillaAutoCompleteTextView.setText("");
+                // Clear the upazilla adapter when the division changes
+                upazillaAdapter.clear();
+                upazillaAdapter.notifyDataSetChanged();
             }
         });
 
@@ -132,106 +120,10 @@ public class AddPowerPlantActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 int divisionPosition = divisionAdapter.getPosition(divisionAutoCompleteTextView.getText().toString());
                 updateUpazillaAutoCompleteTextView(divisionPosition, position);
+                // Clear the text of the upazilla AutoCompleteTextView when district changes
+                upazillaAutoCompleteTextView.setText("");
             }
         });
-
-//        // Set up the adapter for AutoCompleteTextView for Division
-//        ArrayAdapter<String> divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.divisions_array));
-//        autoCompleteTextViewDivision.setAdapter(divisionAdapter);
-//
-//// Set up the OnItemSelectedListener for Division
-//        autoCompleteTextViewDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                String selectedDivision = parent.getItemAtPosition(position).toString();
-//                // Dynamically populate districts based on the selected division
-//                ArrayAdapter<String> districtAdapter;
-//                switch (selectedDivision) {
-//                    case "Barishal":
-//                        districtAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.barishal_divisions_array));
-//                        break;
-//                    case "Chattogram":
-//                        districtAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.chattogram_divisions_array));
-//                        break;
-//                    // Add cases for other divisions as needed
-//                    default:
-//                        // Default to an empty adapter if no match is found
-//                        districtAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, new String[]{});
-//                        break;
-//                }
-//                autoCompleteTextViewDistrict.setAdapter(districtAdapter);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                // Do nothing
-//            }
-//        });
-//
-////// Set up the OnItemSelectedListener for District
-////        autoCompleteTextViewDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-////            @Override
-////            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-////                String selectedDistrict = parent.getItemAtPosition(position).toString();
-////                // Dynamically populate upazillas based on the selected district
-////                ArrayAdapter<String> upazillaAdapter;
-////                switch (selectedDistrict) {
-////                    case "Bagerhat":
-////                        upazillaAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.bagerhat_upazillas_array));
-////                        break;
-////                    case "Bandarban":
-////                        upazillaAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.bandarban_upazillas_array));
-////                        break;
-////                    // Add cases for other districts as needed
-////                    default:
-////                        // Default to an empty adapter if no match is found
-////                        upazillaAdapter = new ArrayAdapter<>(AddPowerPlantActivity.this, android.R.layout.simple_dropdown_item_1line, new String[]{});
-////                        break;
-////                }
-////                autoCompleteTextViewUpazilla.setAdapter(upazillaAdapter);
-////            }
-////
-////            @Override
-////            public void onNothingSelected(AdapterView<?> parent) {
-////                // Do nothing
-////            }
-////        });
-//
-//        // Set up the adapter for the initially selected division
-//        String selectedDivision = autoCompleteTextViewDivision.getText().toString();
-//        ArrayAdapter<String> initialDistrictAdapter;
-//        switch (selectedDivision) {
-//            case "Barishal":
-//                initialDistrictAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.barishal_divisions_array));
-//                break;
-//            case "Chattogram":
-//                initialDistrictAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.chattogram_divisions_array));
-//                break;
-//            // Add cases for other divisions as needed
-//            default:
-//                // Default to an empty adapter if no match is found
-//                initialDistrictAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new String[]{});
-//                break;
-//        }
-//        autoCompleteTextViewDistrict.setAdapter(initialDistrictAdapter);
-//
-////// Set up the adapter for the initially selected district
-////        String selectedDistrict = autoCompleteTextViewDistrict.getText().toString();
-////        ArrayAdapter<String> initialUpazillaAdapter;
-////        switch (selectedDistrict) {
-////            case "Bagerhat":
-////                initialUpazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.bagerhat_upazillas_array));
-////                break;
-////            case "Bandarban":
-////                initialUpazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.bandarban_upazillas_array));
-////                break;
-////            // Add cases for other districts as needed
-////            default:
-////                // Default to an empty adapter if no match is found
-////                initialUpazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new String[]{});
-////                break;
-////        }
-////        autoCompleteTextViewUpazilla.setAdapter(initialUpazillaAdapter);
 
         ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.operators_array));
         autoCompleteTextViewOperator.setAdapter(operatorAdapter);
@@ -245,7 +137,7 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         ArrayAdapter<String> methodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.methods_array));
         autoCompleteTextViewMethod.setAdapter(methodAdapter);
 
-// Handle button click
+        // Handle button click
         binding.addPowerPlantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
