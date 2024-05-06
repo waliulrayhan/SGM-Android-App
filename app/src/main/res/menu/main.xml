@@ -13,10 +13,4 @@
         android:icon="@drawable/user"
         app:showAsAction="always"
         android:title="TODO" />
-
-    <item
-        android:id="@+id/test_menu"
-        android:icon="@drawable/bug_report_fill"
-        app:showAsAction="always"
-        android:title="TODO" />
 </menu>

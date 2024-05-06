@@ -16,16 +16,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.go.sgm_android.Adapter.DistributorAdapter;
-import com.go.sgm_android.Adapter.PowerPlantAdapter;
-import com.go.sgm_android.AddPowerPlantActivity;
+import com.go.sgm_android.Adapter.CommentAdapter;
 import com.go.sgm_android.DistributorListActivity;
-import com.go.sgm_android.MainActivity;
 import com.go.sgm_android.PowerPlantListActivity;
 import com.go.sgm_android.R;
 import com.go.sgm_android.databinding.FragmentHomeBinding;
-import com.go.sgm_android.model.PowerPlant;
+import com.go.sgm_android.model.Comment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -35,8 +34,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,19 +46,12 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private Handler handler;
     private Runnable updateTimeRunnable;
-    private PowerPlantAdapter powerPlantAdapter;
-    private DistributorAdapter distributorAdapter;
+    private CommentAdapter commentAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
         fetchDataFromFirebase();
 
@@ -95,7 +89,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
-                // Start SecondActivity
                 startActivity(intent);
             }
         });
@@ -104,7 +97,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), DistributorListActivity.class);
-                // Start SecondActivity
                 startActivity(intent);
             }
         });
@@ -159,38 +151,15 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        //==========================================================================================
+        // RecyclerView for displaying comments
+        RecyclerView recyclerView = binding.RVCentralCommand;
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        commentAdapter = new CommentAdapter(new ArrayList<>());
+        recyclerView.setAdapter(commentAdapter);
 
-//        //==========================================================================================
-//        // This is for Power Plant Recycler View
-//        // Initialize RecyclerView
-//        RecyclerView recyclerView1 = binding.powerPlantRecyclerView;
-//        recyclerView1.setLayoutManager(new LinearLayoutManager(requireContext()));
-//
-//        // Initialize adapters
-//        powerPlantAdapter = new PowerPlantAdapter(new ArrayList<>());
-//        // Set up adapter
-//        recyclerView1.setAdapter(powerPlantAdapter);
-//        // Fetch power plant data from Firebase
-////        fetchPowerPlantData();
-//
-//
-//        //==========================================================================================
-//        // This is for Distributor Recycler View
-//        // Initialize RecyclerView
-//        RecyclerView recyclerView2 = binding.distributorsRecyclerView;
-//        recyclerView2.setLayoutManager(new LinearLayoutManager(requireContext()));
-//
-//
-//        // Initialize adapters
-//        distributorAdapter = new DistributorAdapter(new ArrayList<>());
-//        // Set up adapter
-//        recyclerView2.setAdapter(distributorAdapter);
-//        // Fetch Distributor data from Firebase
-//        fetchDistributorData();
-
-//
-//        //Fetch Total Data
-//        fetchTotalData();
+        // Fetch comments from Firebase and update RecyclerView
+        fetchCommentData();
 
         return root;
     }
@@ -237,6 +206,38 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void fetchCommentData() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
+                .child("SGM").child("Date").child(currentDate).child("comments");
+
+        commentRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Comment> comments = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String commentText = snapshot.child("comment").getValue(String.class);
+                    if (commentText != null) {
+                        comments.add(new Comment(commentText));
+                    }
+                }
+                commentAdapter.setComments(comments);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FetchCommentData", "Failed to fetch comments: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
     private void fetchDataFromFirebase() {
         // Get the current date
@@ -295,124 +296,4 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-//    private void fetchTotalData() {
-//        TextView totalCurrentCapacity = binding.totalCurrentCapacity;
-//        TextView totalTargetCapacity = binding.totalTargetCapacity;
-//        TextView totalCurrentDemand = binding.totalCurrentDemand;
-//        TextView totalTargetDemand = binding.totalTargetDemand;
-//        TextView currentFrequency = binding.currentFrequency;
-//        TextView fixedFrequency = binding.fixedFrequencyBD;
-//
-//        // Get the current date
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-//        String currentDate = dateFormat.format(new Date());
-//
-//        // Construct the Firebase reference path for the current date
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-//                .child("SGM").child(currentDate);
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    // Retrieve totals node
-//                    DataSnapshot totalsSnapshot = dataSnapshot.child("totals");
-//
-//                    // Retrieve capacity node
-//                    DataSnapshot capacitySnapshot = totalsSnapshot.child("capacity");
-//                    int totalCurrentCapacityValue = capacitySnapshot.child("total_current_capacity").getValue(Integer.class);
-//                    int totalTargetCapacityValue = capacitySnapshot.child("total_target_capacity").getValue(Integer.class);
-//
-//                    // Retrieve demands node
-//                    DataSnapshot demandsSnapshot = totalsSnapshot.child("demands");
-//                    int totalCurrentDemandValue = demandsSnapshot.child("total_current_demand").getValue(Integer.class);
-//                    int totalTargetDemandValue = demandsSnapshot.child("total_target_demand").getValue(Integer.class);
-//
-//                    // Retrieve frequency node
-//                    DataSnapshot frequencySnapshot = totalsSnapshot.child("frequency");
-//                    int currentFrequencyValue = frequencySnapshot.child("current_frequency").getValue(Integer.class);
-//                    int fixedFrequencyBDValue = frequencySnapshot.child("fixed_frequency_BD").getValue(Integer.class);
-//
-//                    // Update UI with fetched values
-//                    totalCurrentCapacity.setText(String.valueOf(totalCurrentCapacityValue));
-//                    totalTargetCapacity.setText(String.valueOf(totalTargetCapacityValue));
-//                    totalCurrentDemand.setText(String.valueOf(totalCurrentDemandValue));
-//                    totalTargetDemand.setText(String.valueOf(totalTargetDemandValue));
-//                    currentFrequency.setText(String.valueOf(currentFrequencyValue));
-//                    fixedFrequency.setText(String.valueOf(fixedFrequencyBDValue));
-//                } else {
-//                    // Handle case when data doesn't exist
-//                    // You can display a message or take appropriate action
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // Handle onCancelled
-//            }
-//        });
-//    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
-//    private void fetchPowerPlantData() {
-//        // Get the current date
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-//        String currentDate = dateFormat.format(new Date());
-//
-//        // Construct the Firebase reference path for the current date
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-//                .child("SGM").child(currentDate).child("power_plants");
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                List<PowerPlant> powerPlants = new ArrayList<>();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    String name = snapshot.getKey();
-//                    String currentCapacity = snapshot.child("current_capacity").getValue(String.class);
-//                    String targetCapacity = snapshot.child("target_capacity").getValue(String.class);
-//                    powerPlants.add(new PowerPlant(name, currentCapacity, targetCapacity));
-//                }
-//                powerPlantAdapter.setPowerPlants(powerPlants);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // Handle onCancelled
-//            }
-//        });
-//    }
-
-//    private void fetchDistributorData() {
-//        // Get the current date
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-//        String currentDate = dateFormat.format(new Date());
-//
-//        // Construct the Firebase reference path for the current date
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-//                .child("SGM").child(currentDate).child("distributors");
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                List<Distributor> distributors = new ArrayList<>();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    String name = snapshot.getKey();
-//                    long currentDemand = snapshot.child("current_demand").getValue(Long.class);
-//                    long targetDemand = snapshot.child("target_demand").getValue(Long.class);
-//                    distributors.add(new Distributor(name, currentDemand, targetDemand));
-//                }
-//                distributorAdapter.setDistributors(distributors);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // Handle onCancelled
-//            }
-//        });
-//    }
-
 }

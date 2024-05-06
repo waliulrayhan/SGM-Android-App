@@ -102,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
-        if (id == R.id.test_menu) {
-            // Handle click on Messenger menu item
-//            Intent intent = new Intent(MainActivity.this, TestActivity.class);
-//            startActivity(intent);
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

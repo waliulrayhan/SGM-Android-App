@@ -16,6 +16,7 @@ import com.go.sgm_android.AddDistributorActivity;
 import com.go.sgm_android.AddPowerPlantActivity;
 import com.go.sgm_android.MainActivity;
 import com.go.sgm_android.R;
+import com.go.sgm_android.SetTargetActivity;
 import com.go.sgm_android.databinding.FragmentAddBinding;
 import com.go.sgm_android.databinding.FragmentSlideshowBinding;
 import com.go.sgm_android.ui.slideshow.SlideshowViewModel;
@@ -54,9 +55,9 @@ public class AddFragment extends Fragment {
             @Override
             public void onClick(View v) {
 //                //                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(getContext(), AddPowerPlantActivity.class);
-//                // Start SecondActivity
-//                startActivity(intent);
+                Intent intent = new Intent(getContext(), SetTargetActivity.class);
+                // Start SecondActivity
+                startActivity(intent);
             }
         });
 
