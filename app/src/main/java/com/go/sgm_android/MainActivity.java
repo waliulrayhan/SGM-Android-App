@@ -1,27 +1,29 @@
 package com.go.sgm_android;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.Menu;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.Toast;
 
-import com.go.sgm_android.model.PowerPlant;
 import com.go.sgm_android.ui.add.AddFragment;
-import com.go.sgm_android.ui.history.HistoryFragment;
 import com.go.sgm_android.ui.home.HomeFragment;
 import com.go.sgm_android.ui.slideshow.SlideshowFragment;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.go.sgm_android.databinding.ActivityMainBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,16 +31,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private static final String UPLOAD_WORK_TAG = "upload_work";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the title of the activity
         setTitle("Real Time Grid Information");
+
+        // Schedule the data upload task using WorkManager
+        scheduleDailyDataUploadTask();
+
+//        Toast.makeText(MainActivity.this, "Test: Data Uploading", Toast.LENGTH_LONG).show();
+//        uploadDataToFirebase(getApplicationContext());
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
@@ -99,96 +106,121 @@ public class MainActivity extends AppCompatActivity {
             // Handle click on Messenger menu item
 //            Intent intent = new Intent(MainActivity.this, TestActivity.class);
 //            startActivity(intent);
-
-            Toast.makeText(MainActivity.this, "Test: Data Uploading", Toast.LENGTH_LONG).show();
-            uploadDataToFirebase1();
-            uploadDataToFirebase2();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void uploadDataToFirebase1() {
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
+//    public static void uploadDataToFirebase(Context context) {
+//        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
+//
+//        // Get the current date
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+//        String currentDate = dateFormat.format(new Date());
+//
+//        // Upload PowerPlant data
+//        DatabaseReference powerPlantRef = databaseRef.child("PowerPlant");
+//
+//        powerPlantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    String powerPlantKey = snapshot.getKey();
+//                    DatabaseReference powerPlantDateRef = snapshot.child("Date").child(currentDate).getRef();
+//                    powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue("null");
+//                    powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue("null");
+//                    powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue("null");
+//                    powerPlantDateRef.child("alert").setValue("false");
+//                    powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue("null");
+//                    powerPlantDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
+//            }
+//        });
+//
+//        // Upload Distributor Data
+//        DatabaseReference distributorRef = databaseRef.child("Distributor");
+//        distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
+//                    DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(currentDate).getRef();
+//                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue("null");
+//                    distributorDateRef.child("demand").child("ddtargetdemand").setValue("null");
+//                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue("null");
+//                    distributorDateRef.child("alert").setValue("false");
+//                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue("null");
+//                    distributorDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.e("UploadDataToFirebase", "Failed to upload distributor data: " + databaseError.getMessage());
+//            }
+//        });
+//
+//        // Upload Date data
+//        DatabaseReference dateRef = databaseRef.child("Date").child(currentDate).child("total");
+//        dateRef.child("AllppcurrentCapacity").setValue("null");
+//        dateRef.child("AllpptargetCapacity").setValue("null");
+//        dateRef.child("AllddcurrentDemand").setValue("null");
+//        dateRef.child("AllddtargetDemand").setValue("null");
+//    }
 
-        // Reference to "SGM/PowerPlant"
-        DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+//    public static void scheduleDataUploadAlarm(Context context) {
+//        // Set the alarm to start at approximately 10:00 PM.
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0); // 12:00 AM
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//
+//        // If it's already past 10:00 PM, set it for the next day
+//        if (Calendar.getInstance().after(calendar)) {
+//            calendar.add(Calendar.DATE, 1);
+//        }
+//
+//        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+//        alarmIntent.setAction("UPLOAD_DATA");
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+//
+//        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        if (alarmMgr != null) {
+//            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+//                    AlarmManager.INTERVAL_DAY, pendingIntent);
+//        }
+//    }
 
-        powerPlantRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.exists()) {
-                        String uniqueKey = snapshot.getKey();
-                        DatabaseReference dateRef = snapshot.child("PP-Date").child(currentDate).getRef();
+    private void scheduleDailyDataUploadTask() {
+        // Create input data if needed
+        Data inputData = new Data.Builder().build();
 
-                        // Create data map for dateRef
-                        Map<String, Object> dataMap = new HashMap<>();
-                        dataMap.put("capacity", new HashMap<String, Object>() {{
-                            put("ppcurrentCapacity", "null");
-                            put("pptargetCapacity", "null");
-                        }});
-                        dataMap.put("history", new HashMap<String, Object>() {{
-                            put("pptotalCurrentCapacity", "null");
-                            put("last_update_time", "11:59:59 PM");
-                        }});
-                        dataMap.put("alert", "false");
+        // Create a PeriodicWorkRequest for the daily upload task
+        // Set the interval to 1 day and specify the time for daily upload
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0); // 10 AM
+        calendar.set(Calendar.MINUTE, 2);
+        calendar.set(Calendar.SECOND, 0);
+        long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
+        if (initialDelay < 0) {
+            initialDelay += TimeUnit.DAYS.toMillis(1); // If the time has already passed today, set it for tomorrow
+        }
 
-                        // Set data to dateRef
-                        dateRef.setValue(dataMap)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            // Data uploaded successfully
-                                            // Handle success if needed
-                                        } else {
-                                            // Data upload failed
-                                            // Handle failure if needed
-                                        }
-                                    }
-                                });
-                    }
-                }
-            }
+        PeriodicWorkRequest uploadWorkRequest = new PeriodicWorkRequest.Builder(
+                UploadWorker.class, 1, TimeUnit.DAYS)
+                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .setInputData(inputData)
+                .addTag(UPLOAD_WORK_TAG)
+                .build();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle onCancelled event if needed
-            }
-        });
+        // Enqueue the periodic work request with WorkManager
+        WorkManager.getInstance(this)
+                .enqueueUniquePeriodicWork(UPLOAD_WORK_TAG, ExistingPeriodicWorkPolicy.REPLACE, uploadWorkRequest);
     }
-
-    private void uploadDataToFirebase2() {
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
-
-        // Reference to "SGM/PowerPlant/Date/currentDate/total"
-        DatabaseReference totalRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant").child("Date").child(currentDate).child("total");
-
-        // Create data map for totalRef
-        Map<String, Object> totalMap = new HashMap<>();
-        totalMap.put("AllppcurrentCapacity", "null");
-        totalMap.put("AllpptargetCapacity", "null");
-
-        // Set data to totalRef
-        totalRef.setValue(totalMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            // Data uploaded successfully
-                            // Handle success if needed
-                        } else {
-                            // Data upload failed
-                            // Handle failure if needed
-                        }
-                    }
-                });
-    }
-
 }
