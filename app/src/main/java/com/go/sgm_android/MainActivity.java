@@ -25,6 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Declare a global variable to store the previous value of ppcurrentCapacity for each power plant
-    private Map<String, Integer> previousCapacities = new HashMap<>();
+    private Map<String, Float> previousCapacities = new HashMap<>();
+    private Map<String, Float> previousDemands = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         String currentDate = dateFormat.format(new Date());
 
         DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+        DatabaseReference distributorRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor");
 
         powerPlantRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -95,18 +100,25 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String powerPlantKey = snapshot.getKey();
                     if (snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").exists()) {
-                        int currentCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").getValue(Integer.class);
+                        float currentCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").getValue(Float.class);
 
                         // Get the previous capacity for this power plant
-                        int previousCapacity = previousCapacities.getOrDefault(powerPlantKey, -1);
+                        float previousCapacity = previousCapacities.getOrDefault(powerPlantKey, -1f);
 
                         // Check if current capacity is different from previous capacity
                         if (currentCapacity != previousCapacity) {
                             // Capacity has changed, show toast
                             showToast("Power Plant " + powerPlantKey + " - Capacity changed to: " + currentCapacity);
 
+                            // Convert to BigDecimal for precise arithmetic
+                            BigDecimal currentCapacityBigDecimal = new BigDecimal(Float.toString(currentCapacity));
+                            BigDecimal previousCapacityBigDecimal = new BigDecimal(Float.toString(previousCapacity));
+
                             // Calculate total capacity
-                            int totalCapacity = currentCapacity + previousCapacity;
+                            BigDecimal totalCapacityBigDecimal = currentCapacityBigDecimal.add(previousCapacityBigDecimal);
+                            // Round the total capacity to two decimal places
+                            totalCapacityBigDecimal = totalCapacityBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                            float totalCapacity = totalCapacityBigDecimal.floatValue();
 
                             // Get reference to the location to set the value
                             DatabaseReference totalCapacityRef = snapshot.child("Date").child(currentDate).child("total").child("pptotalCurrentCapacity").getRef();
@@ -119,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (mutableData.getValue() == null) {
                                         mutableData.setValue(totalCapacity);
                                     } else {
-                                        int currentValue = mutableData.getValue(Integer.class);
+                                        float currentValue = mutableData.getValue(Float.class);
                                         mutableData.setValue(currentValue + currentCapacity);
                                     }
                                     return Transaction.success(mutableData);
@@ -143,6 +155,82 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
+            }
+        });
+
+        distributorRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Distributor keys mapping
+                    Map<String, String> distributorKeysMap = new HashMap<>();
+                    distributorKeysMap.put("BPDB", "Bangladesh Power Development Board");
+//                    distributorKeysMap.put("BREB", "Bangladesh Rural Electrification Board");
+                    distributorKeysMap.put("DESCO", "Dhaka Electric Supply Company Limited");
+//                    distributorKeysMap.put("DPDC", "Dhaka Power Distribution Company Limited");
+//                    distributorKeysMap.put("WZPDCL", "West Zone Power Distribution Company");
+//                    distributorKeysMap.put("NESCO", "Northern Electricity Supply Company PLC");
+
+                    // Extract distributor key and name
+                    String distributorKey = snapshot.getKey();
+                    String distributorName = distributorKeysMap.get(distributorKey);
+
+                    if (snapshot.child("Date").child(currentDate).child("demand").child("ddcurrentDemand").exists()) {
+                        float currentDemand = snapshot.child("Date").child(currentDate).child("demand").child("ddcurrentDemand").getValue(Float.class);
+
+                        // Get the previous demand for this distributor
+                        float previousDemand = previousDemands.getOrDefault(distributorKey, -1f);
+
+                        // Check if current demand is different from previous demand
+                        if (currentDemand != previousDemand) {
+                            // Demand has changed, show toast
+                            showToast("Distributor " + distributorName + " - Demand changed to: " + currentDemand);
+
+                            // Convert to BigDecimal for precise arithmetic
+                            BigDecimal currentDemandBigDecimal = new BigDecimal(Float.toString(currentDemand));
+                            BigDecimal previousDemandBigDecimal = new BigDecimal(Float.toString(previousDemand));
+
+                            // Calculate total demand
+                            BigDecimal totalDemandBigDecimal = currentDemandBigDecimal.add(previousDemandBigDecimal);
+                            // Round the total demand to two decimal places
+                            totalDemandBigDecimal = totalDemandBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                            float totalDemand = totalDemandBigDecimal.floatValue();
+
+                            // Get reference to the location to set the value
+                            DatabaseReference totalDemandRef = snapshot.child("Date").child(currentDate).child("total").child("ddtotalCurrentdemand").getRef();
+
+                            // Update total demand using transaction
+                            totalDemandRef.runTransaction(new Transaction.Handler() {
+                                @NonNull
+                                @Override
+                                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                                    if (mutableData.getValue() == null) {
+                                        mutableData.setValue(totalDemand);
+                                    } else {
+                                        float currentValue = mutableData.getValue(Float.class);
+                                        mutableData.setValue(currentValue + currentDemand);
+                                    }
+                                    return Transaction.success(mutableData);
+                                }
+
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                                    if (databaseError != null) {
+                                        Log.e("PowerPlantListActivity", "Transaction failed: " + databaseError.getMessage());
+                                    }
+                                }
+                            });
+
+                            // Update previousDemand to currentDemand for this distributor
+                            previousDemands.put(distributorKey, currentDemand);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("PowerPlantListActivity", "Failed to fetch distributor data from distributorRef: " + databaseError.getMessage());
             }
         });
     }
@@ -189,8 +277,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the interval to 1 day and specify the time for daily upload
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0); // 10 AM
-        calendar.set(Calendar.MINUTE, 2);
-        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 11);
         long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
         if (initialDelay < 0) {
             initialDelay += TimeUnit.DAYS.toMillis(1); // If the time has already passed today, set it for tomorrow
