@@ -66,7 +66,7 @@ public class DistributorListActivity extends AppCompatActivity {
                     String totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(String.class);
 
                     // Update UI with fetched values
-                    binding.BPDBTotalCurrentDemand.setText("Total Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
+                    binding.BPDBTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
                     binding.BPDBTotalTargetDemand.setText("Target Demand: "+String.valueOf(totaltargetdemandValue)+" MW");
                 } else {
                     // Handle case when data doesn't exist
@@ -91,7 +91,7 @@ public class DistributorListActivity extends AppCompatActivity {
                     String totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(String.class);
 
                     // Update UI with fetched values
-                    binding.DESCOTotalCurrentDemand.setText("Total Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
+                    binding.DESCOTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
                     binding.DESCOTotalTargetDemand.setText("Target Demand: "+String.valueOf(totaltargetdemandValue)+" MW");
                 } else {
                     // Handle case when data doesn't exist

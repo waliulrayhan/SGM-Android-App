@@ -71,12 +71,12 @@ public class PowerPlantListActivity extends AppCompatActivity {
                 List<PowerPlant> powerPlants = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String key = snapshot.getKey();
-                    if (snapshot.child("ppoutput").exists() && snapshot.child("ppname").exists() && snapshot.child("Date").child(currentDate).exists()) {
+                    if (snapshot.child("ppname").exists() && snapshot.child("Date").child(currentDate).exists()) {
                         String name = snapshot.child("ppname").getValue(String.class);
                         String currentCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").getValue(String.class);
-                        String ppOutput = snapshot.child("ppoutput").getValue(String.class);
+                        String targetCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("pptargetCapacity").getValue(String.class);
                         // You can also fetch other fields similarly
-                        PowerPlant powerPlant = new PowerPlant(name, currentCapacity, ppOutput);
+                        PowerPlant powerPlant = new PowerPlant(name, currentCapacity, targetCapacity);
                         powerPlants.add(powerPlant);
                     }
                 }

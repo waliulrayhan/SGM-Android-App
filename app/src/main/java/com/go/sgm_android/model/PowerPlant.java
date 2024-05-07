@@ -25,10 +25,10 @@ public class PowerPlant {
         this.PPname = PPname;
     }
 
-    public PowerPlant(String PPname, String PPcurrentCapacity, String PPoutput) {
+    public PowerPlant(String PPname, String PPcurrentCapacity, String PPtargetCapacity) {
         this.PPname = PPname;
         this.PPcurrentCapacity = PPcurrentCapacity;
-        this.PPoutput = PPoutput;
+        this.PPtargetCapacity = PPtargetCapacity;
     }
 
 

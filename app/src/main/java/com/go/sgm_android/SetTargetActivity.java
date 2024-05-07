@@ -2,6 +2,8 @@ package com.go.sgm_android;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,8 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.go.sgm_android.databinding.ActivitySetTargetBinding;
-import com.go.sgm_android.model.PowerPlant;
-import com.go.sgm_android.ui.history.HistoryFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +40,7 @@ public class SetTargetActivity extends AppCompatActivity {
     private ArrayAdapter<String> typeAdapter, ppnameAdapter, ddnameAdapter;
     private String[] type = {"Power Plant", "Distributor"};
     static String selectedDate;
-
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,10 @@ public class SetTargetActivity extends AppCompatActivity {
 
         // Set the title of the activity
         setTitle("Set Target");
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading data...");
+        progressDialog.setCancelable(false);
 
         binding.pickDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +117,7 @@ public class SetTargetActivity extends AppCompatActivity {
                     Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
 
                     setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
+                    progressDialog.show();
                 }
                 else {
                     Toast.makeText(SetTargetActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -133,16 +140,31 @@ public class SetTargetActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         if (snapshot.child("ppname").exists() && snapshot.child("ppname").getValue(String.class).equals(selectedName)) {
                             // This snapshot corresponds to the selected power plant
-                            String powerPlantKey = snapshot.getKey();
                             DatabaseReference powerPlantDateRef = snapshot.child("Date").child(selectedDate).getRef();
-                            powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(selectedTarget);
+                            powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(selectedTarget)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            progressDialog.dismiss();
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(SetTargetActivity.this, "Data uploaded successfully", Toast.LENGTH_SHORT).show();
+                                                // Navigate to MainActivity
+                                                startActivity(new Intent(SetTargetActivity.this, MainActivity.class));
+                                                finish(); // Close the current activity
+                                            } else {
+                                                Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
                         }
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    progressDialog.dismiss();
                     Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
+                    Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -152,25 +174,34 @@ public class SetTargetActivity extends AppCompatActivity {
             distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
-//                        DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(selectedDate).getRef();
-//                        distributorDateRef.child("demand").child("ddtargetdemand").setValue(selectedTarget);
-//                    }
-//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                        if (snapshot.child(selectedName).getValue(String.class).equals(selectedName)) {
-                            DatabaseReference distributorDateRef = distributorRef.child("Date").child(selectedDate).getRef();
-                            distributorDateRef.child("demand").child("ddtargetdemand").setValue(selectedTarget);
-//                        }
-//                    }
+                    DatabaseReference distributorDateRef = distributorRef.child("Date").child(selectedDate).getRef();
+                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(selectedTarget)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    progressDialog.dismiss();
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(SetTargetActivity.this, "Data uploaded successfully", Toast.LENGTH_SHORT).show();
+                                        // Navigate to MainActivity
+                                        startActivity(new Intent(SetTargetActivity.this, MainActivity.class));
+                                        finish(); // Close the current activity
+                                    } else {
+                                        Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    progressDialog.dismiss();
                     Log.e("UploadDataToFirebase", "Failed to upload distributor data: " + databaseError.getMessage());
+                    Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
+
     private void fetchPowerPlantNames() {
         // Get the current date
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());

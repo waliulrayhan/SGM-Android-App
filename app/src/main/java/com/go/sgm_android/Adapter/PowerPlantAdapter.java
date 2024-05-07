@@ -46,19 +46,19 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
     static class PowerPlantViewHolder extends RecyclerView.ViewHolder {
         TextView powerPlantName;
         TextView currentCapacity;
-        TextView maxCapacity;
+        TextView targetCapacity;
 
         public PowerPlantViewHolder(@NonNull View itemView) {
             super(itemView);
             powerPlantName = itemView.findViewById(R.id.PP_name);
             currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity); // Assuming these are the ids in your item layout
-            maxCapacity = itemView.findViewById(R.id.PP_Max_Output); // Assuming these are the ids in your item layout
+            targetCapacity = itemView.findViewById(R.id.PP_Max_Output); // Assuming these are the ids in your item layout
         }
 
         void bind(PowerPlant powerPlant) {
             powerPlantName.setText(powerPlant.getPPname());
             currentCapacity.setText("Current Capacity: "+powerPlant.getPPcurrentCapacity()+" MW"); // Convert long to String
-            maxCapacity.setText("Max Output: "+powerPlant.getPPoutput()+" MW"); // Convert long to String
+            targetCapacity.setText("Target Capacity: "+powerPlant.getPPtargetCapacity()+" MW"); // Convert long to String
         }
     }
 }
