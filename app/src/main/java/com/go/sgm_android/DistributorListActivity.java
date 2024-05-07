@@ -62,8 +62,8 @@ public class DistributorListActivity extends AppCompatActivity {
                     // Retrieve total node
                     DataSnapshot demandSnapshot = dataSnapshot.child("demand");
 
-                    String totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(String.class);
-                    String totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(String.class);
+                    float totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(float.class);
+                    float totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(float.class);
 
                     // Update UI with fetched values
                     binding.BPDBTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
@@ -87,8 +87,8 @@ public class DistributorListActivity extends AppCompatActivity {
                     // Retrieve total node
                     DataSnapshot demandSnapshot = dataSnapshot.child("demand");
 
-                    String totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(String.class);
-                    String totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(String.class);
+                    float totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(float.class);
+                    float totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(float.class);
 
                     // Update UI with fetched values
                     binding.DESCOTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");

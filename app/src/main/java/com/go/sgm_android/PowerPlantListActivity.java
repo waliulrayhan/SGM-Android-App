@@ -73,8 +73,8 @@ public class PowerPlantListActivity extends AppCompatActivity {
                     String key = snapshot.getKey();
                     if (snapshot.child("ppname").exists() && snapshot.child("Date").child(currentDate).exists()) {
                         String name = snapshot.child("ppname").getValue(String.class);
-                        String currentCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").getValue(String.class);
-                        String targetCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("pptargetCapacity").getValue(String.class);
+                        float currentCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("ppcurrentCapacity").getValue(float.class);
+                        float targetCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("pptargetCapacity").getValue(float.class);
                         // You can also fetch other fields similarly
                         PowerPlant powerPlant = new PowerPlant(name, currentCapacity, targetCapacity);
                         powerPlants.add(powerPlant);

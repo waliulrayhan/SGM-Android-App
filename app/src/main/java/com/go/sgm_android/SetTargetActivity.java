@@ -109,9 +109,10 @@ public class SetTargetActivity extends AppCompatActivity {
                 // Get the selected type and name
                 String selectedType = typeAutoCompleteTextView.getText().toString();
                 String selectedName = nameAutoCompleteTextView.getText().toString();
-                String selectedTarget = binding.targetEditText.getText().toString().trim();
+                String ss = binding.targetEditText.getText().toString().trim();
+                float selectedTarget = Float.parseFloat(ss);
 
-                if (!selectedDate.isEmpty() && !selectedType.isEmpty() && !selectedName.isEmpty() && !selectedTarget.isEmpty()){
+                if (!selectedDate.isEmpty() && !selectedType.isEmpty() && !selectedName.isEmpty() && !ss.isEmpty()){
                     // Show toast with selected type and name
                     String message = "Date: "+selectedDate+" Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: "+selectedTarget;
                     Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -127,7 +128,7 @@ public class SetTargetActivity extends AppCompatActivity {
         });
     }
 
-    private void setTargetDataIntoFirebase(String selectedDate, String selectedType, String selectedName, String selectedTarget) {
+    private void setTargetDataIntoFirebase(String selectedDate, String selectedType, String selectedName, float selectedTarget) {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
 
         if (selectedType.equals("Power Plant")){

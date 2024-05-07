@@ -254,7 +254,7 @@ public class HomeFragment extends Fragment {
                     // Retrieve total node
                     DataSnapshot totalsSnapshot = dataSnapshot.child("total");
 
-                    String totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(String.class);
+                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
 
                     // Update UI with fetched values
                     binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
@@ -280,7 +280,7 @@ public class HomeFragment extends Fragment {
                     // Retrieve total node
                     DataSnapshot totalsSnapshot = dataSnapshot.child("total");
 
-                    String totalCurrentCapacityValue = totalsSnapshot.child("AllddcurrentDemand").getValue(String.class);
+                    float totalCurrentCapacityValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
                     // Update UI with fetched values
                     binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentCapacityValue)+" MW");

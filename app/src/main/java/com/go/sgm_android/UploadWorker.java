@@ -51,11 +51,11 @@ public class UploadWorker extends Worker {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String powerPlantKey = snapshot.getKey();
                     DatabaseReference powerPlantDateRef = snapshot.child("Date").child(currentDate).getRef();
-                    powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue("null");
-                    powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue("null");
-                    powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue("null");
+                    powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue(0);
+                    powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(0);
+                    powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue(0);
                     powerPlantDateRef.child("alert").setValue("false");
-                    powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue("null");
+                    powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue(0);
                     powerPlantDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
                 }
             }
@@ -73,11 +73,11 @@ public class UploadWorker extends Worker {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
                     DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(currentDate).getRef();
-                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue("null");
-                    distributorDateRef.child("demand").child("ddtargetdemand").setValue("null");
-                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue("null");
+                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue(0);
+                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(0);
+                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue(0);
                     distributorDateRef.child("alert").setValue("false");
-                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue("null");
+                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue(0);
                     distributorDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
                 }
             }
@@ -90,9 +90,9 @@ public class UploadWorker extends Worker {
 
         // Upload Date data
         DatabaseReference dateRef = databaseRef.child("Date").child(currentDate).child("total");
-        dateRef.child("AllppcurrentCapacity").setValue("null");
-        dateRef.child("AllpptargetCapacity").setValue("null");
-        dateRef.child("AllddcurrentDemand").setValue("null");
-        dateRef.child("AllddtargetDemand").setValue("null");
+        dateRef.child("AllppcurrentCapacity").setValue(0);
+        dateRef.child("AllpptargetCapacity").setValue(0);
+        dateRef.child("AllddcurrentDemand").setValue(0);
+        dateRef.child("AllddtargetDemand").setValue(0);
     }
 }
