@@ -11,7 +11,7 @@
         android:id="@+id/pickDate"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
@@ -19,7 +19,7 @@
         android:textColor="@color/black"
         android:textColorLink="#000000"
         android:shadowColor="@color/black"
-        app:cornerRadius="2dp"
+        app:cornerRadius="5dp"
         android:textSize="16sp"
         app:icon="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dropdown_menu_division"
+        android:id="@+id/dropdown_menu_type"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,35 +43,35 @@
         app:layout_constraintTop_toBottomOf="@+id/pickDate">
 
         <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextViewDivision"
+            android:id="@+id/autoCompleteTextViewType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dropdown_menu_district"
+        android:id="@+id/dropdown_menu_name"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:hint="Select PP or DD"
+        android:hint="Select Name"
         app:boxStrokeColor="@color/black"
         app:hintTextColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_division">
+        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_type">
         <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextViewDistrict"
+            android:id="@+id/autoCompleteTextViewName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/AddPowerPlantTextField"
+        android:id="@+id/TargetTextField"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -83,17 +83,17 @@
         app:startIconDrawable="@drawable/bolt_fill0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_district">
+        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_name">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/addPowerPlantEditText"
+            android:id="@+id/targetEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/addPowerPlantButton"
+        android:id="@+id/setTargetButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -107,7 +107,7 @@
         app:cornerRadius="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AddPowerPlantTextField"
+        app:layout_constraintTop_toBottomOf="@+id/TargetTextField"
         tools:ignore="VisualLintButtonSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
