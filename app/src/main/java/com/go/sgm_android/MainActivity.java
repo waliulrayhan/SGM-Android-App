@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference powerPlantRef;
     private String currentDate;
 
-
     // Declare a global variable to store the previous value of ppcurrentCapacity for each power plant
     private Map<String, Float> previousCapacities = new HashMap<>();
     private Map<String, Float> previousDemands = new HashMap<>();
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Continuous Data Change
         continuousDataUpdateIntoFirebase();
+        continuousDataUpdateIntoFirebase2();
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
             Fragment selectedFragment = null;
@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
         DatabaseReference distributorRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor");
-
         powerPlantRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         // Check if current capacity is different from previous capacity
                         if (currentCapacity != previousCapacity) {
                             // Capacity has changed, show toast
-                            showToast("Power Plant " + powerPlantKey + " - Capacity changed to: " + currentCapacity);
+//                            showToast("Power Plant " + powerPlantKey + " - Capacity changed to: " + currentCapacity);
 
                             // Convert to BigDecimal for precise arithmetic
                             BigDecimal currentCapacityBigDecimal = new BigDecimal(Float.toString(currentCapacity));
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                         // Check if current demand is different from previous demand
                         if (currentDemand != previousDemand) {
                             // Demand has changed, show toast
-                            showToast("Distributor " + distributorName + " - Demand changed to: " + currentDemand);
+//                            showToast("Distributor " + distributorName + " - Demand changed to: " + currentDemand);
 
                             // Convert to BigDecimal for precise arithmetic
                             BigDecimal currentDemandBigDecimal = new BigDecimal(Float.toString(currentDemand));
@@ -234,6 +233,148 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void continuousDataUpdateIntoFirebase2() {
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        DatabaseReference totalpowerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+        DatabaseReference totaldistributorRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor");
+
+        totalpowerPlantRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Initialize total sum variable
+                double totalCapacitySum = 0;
+
+                // Iterate through each power plant
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Get the total current capacity for this power plant
+                    Float totalCurrentCapacity = snapshot.child("Date").child(currentDate).child("total").child("pptotalCurrentCapacity").getValue(Float.class);
+
+                    // If the total current capacity is not null, add it to the total sum
+                    if (totalCurrentCapacity != null) {
+                        totalCapacitySum += totalCurrentCapacity;
+                    }
+                }
+
+                    // Show toast message with the total sum
+                    showToast("Total Current Capacity: " + totalCapacitySum);
+
+                    // Get reference to the location to set the value
+                    DatabaseReference totalCapacityRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Date").child(currentDate).child("total").child("AllppcurrentCapacity").getRef();
+
+                    // Update total capacity using transaction
+                    final double finalTotalCapacitySum = totalCapacitySum; // Declare as final
+                    totalCapacityRef.runTransaction(new Transaction.Handler() {
+                        @NonNull
+                        @Override
+                        public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                            // Get the current value
+                            Double currentValue = mutableData.getValue(Double.class);
+
+                            // If the current value is null, set it to 0
+                            if (currentValue == null) {
+                                mutableData.setValue(finalTotalCapacitySum);
+                            } else {
+                                // Add the total sum to the current value
+                                mutableData.setValue(finalTotalCapacitySum);
+                            }
+                            return Transaction.success(mutableData);
+                        }
+
+                        @Override
+                        public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
+                            if (databaseError != null) {
+                                Log.e("PowerPlantListActivity", "Transaction failed: " + databaseError.getMessage());
+                            } else if (committed) {
+                                Log.d("PowerPlantListActivity", "Transaction successful.");
+                            } else {
+                                Log.d("PowerPlantListActivity", "Transaction aborted.");
+                            }
+                        }
+                    });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
+            }
+        });
+
+        totaldistributorRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Initialize total sum variable
+                double totalDemandSum = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Distributor keys mapping
+                    Map<String, String> distributorKeysMap = new HashMap<>();
+                    distributorKeysMap.put("BPDB", "Bangladesh Power Development Board");
+//                    distributorKeysMap.put("BREB", "Bangladesh Rural Electrification Board");
+                    distributorKeysMap.put("DESCO", "Dhaka Electric Supply Company Limited");
+//                    distributorKeysMap.put("DPDC", "Dhaka Power Distribution Company Limited");
+//                    distributorKeysMap.put("WZPDCL", "West Zone Power Distribution Company");
+//                    distributorKeysMap.put("NESCO", "Northern Electricity Supply Company PLC");
+
+                    // Extract distributor key and name
+                    String distributorKey = snapshot.getKey();
+                    String distributorName = distributorKeysMap.get(distributorKey);
+
+                    if (snapshot.child("Date").child(currentDate).child("total").child("ddtotalCurrentdemand").exists()) {
+                        float currentDemand = snapshot.child("Date").child(currentDate).child("total").child("ddtotalCurrentdemand").getValue(Float.class);
+
+                        // If the total current capacity is not null, add it to the total sum
+                        totalDemandSum += currentDemand;
+                    }
+                }
+
+                // Show toast message with the total sum
+                showToast("Total Current Demand: " + totalDemandSum);
+
+                // Get reference to the location to set the value
+                DatabaseReference totalDemandRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Date").child(currentDate).child("total").child("AllddcurrentDemand").getRef();
+
+                // Update total capacity using transaction
+                final double finalTotalDemandSum = totalDemandSum; // Declare as final
+                totalDemandRef.runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        // Get the current value
+                        Double currentValue = mutableData.getValue(Double.class);
+
+                        // If the current value is null, set it to 0
+                        if (currentValue == null) {
+                            mutableData.setValue(finalTotalDemandSum);
+                        } else {
+                            // Add the total sum to the current value
+                            mutableData.setValue(finalTotalDemandSum);
+                        }
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
+                        if (databaseError != null) {
+                            Log.e("PowerPlantListActivity", "Transaction failed: " + databaseError.getMessage());
+                        } else if (committed) {
+                            Log.d("PowerPlantListActivity", "Transaction successful.");
+                        } else {
+                            Log.d("PowerPlantListActivity", "Transaction aborted.");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("PowerPlantListActivity", "Failed to fetch distributor data from distributorRef: " + databaseError.getMessage());
+            }
+        });
+    }
+
 
 
 
