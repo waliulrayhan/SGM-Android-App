@@ -69,7 +69,6 @@ public class HistoryFragment extends Fragment {
             text = root.findViewById(R.id.textView7);
 
             binding.dataTextView.setVisibility(View.GONE);
-            binding.historyDataTextView.setVisibility(View.GONE);
             pickDateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -174,12 +173,17 @@ public class HistoryFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String key = snapshot.getKey();
                     if (snapshot.child("ppname").exists() && snapshot.child("Date").child(selectedDate).exists()) {
+                        binding.dataTextView.setVisibility(View.GONE);
+
                         String name = snapshot.child("ppname").getValue(String.class);
                         float currentCapacity = snapshot.child("Date").child(selectedDate).child("capacity").child("pptargetCapacity").getValue(float.class);
                         float targetCapacity = snapshot.child("Date").child(selectedDate).child("total").child("pptotalCurrentCapacity").getValue(float.class);
                         // You can also fetch other fields similarly
                         PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
                         powerPlants.add(powerPlant);
+                    }else {
+                        binding.dataTextView.setText("No Data Found for the Selected Date");
+                        binding.dataTextView.setVisibility(View.VISIBLE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -215,11 +219,16 @@ public class HistoryFragment extends Fragment {
                     String distributorName = distributorKeysMap.get(distributorKey);
 
                     if (snapshot.child("Date").child(selectedDate).exists()) {
+                        binding.dataTextView.setVisibility(View.GONE);
+
                         float currentDemand = snapshot.child("Date").child(selectedDate).child("total").child("ddtotalCurrentdemand").getValue(float.class);
                         float targetDemand = snapshot.child("Date").child(selectedDate).child("demand").child("ddtargetdemand").getValue(float.class);
                         // You can also fetch other fields similarly
                         Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand);
                         distributors.add(distributor);
+                    }else {
+                        binding.dataTextView.setText("No Data Found for the Selected Date");
+                        binding.dataTextView.setVisibility(View.VISIBLE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -243,12 +252,17 @@ public class HistoryFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String key = snapshot.getKey();
                     if (snapshot.child("ppname").exists() && snapshot.child("Date").child(selectedDate).exists()) {
+                        binding.dataTextView.setVisibility(View.GONE);
+
                         String name = snapshot.child("ppname").getValue(String.class);
                         float currentCapacity = snapshot.child("Date").child(selectedDate).child("capacity").child("pptargetCapacity").getValue(float.class);
                         float targetCapacity = snapshot.child("Date").child(selectedDate).child("total").child("pptotalCurrentCapacity").getValue(float.class);
                         // You can also fetch other fields similarly
                         PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
                         powerPlants.add(powerPlant);
+                    }else {
+                        binding.dataTextView.setText("No Data Found for the Selected Date");
+                        binding.dataTextView.setVisibility(View.VISIBLE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -282,11 +296,16 @@ public class HistoryFragment extends Fragment {
                     String distributorName = distributorKeysMap.get(distributorKey);
 
                     if (snapshot.child("Date").child(selectedDate).exists()) {
+                        binding.dataTextView.setVisibility(View.GONE);
+
                         float currentDemand = snapshot.child("Date").child(selectedDate).child("total").child("ddtotalCurrentdemand").getValue(float.class);
                         float targetDemand = snapshot.child("Date").child(selectedDate).child("demand").child("ddtargetdemand").getValue(float.class);
                         // You can also fetch other fields similarly
                         Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand);
                         distributors.add(distributor);
+                    }else {
+                        binding.dataTextView.setText("No Data Found for the Selected Date");
+                        binding.dataTextView.setVisibility(View.VISIBLE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -310,8 +329,13 @@ public class HistoryFragment extends Fragment {
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
         private Button pickDateButton;
+        private Calendar maxDateCalendar;
+
         public DatePickerFragment(Button pickDateButton) {
             this.pickDateButton = pickDateButton;
+
+            // Set maximum date to today
+            maxDateCalendar = Calendar.getInstance();
         }
 
         @NonNull
@@ -324,17 +348,21 @@ public class HistoryFragment extends Fragment {
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it.
-            return new DatePickerDialog(requireContext(), this, year, month, day);
+            DatePickerDialog dialog = new DatePickerDialog(requireContext(), this, year, month, day);
+
+            // Set maximum date to today
+            dialog.getDatePicker().setMaxDate(maxDateCalendar.getTimeInMillis());
+
+            return dialog;
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Update the text of the button with the selected date
             selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
-//            TextView text = root.findViewById(R.id.textView7);
-//            text.setVisibility(View.GONE);
             pickDateButton.setText(selectedDate);
         }
     }
+
 
     private static String formatKey(String key) {
         // Modify the key to display as desired

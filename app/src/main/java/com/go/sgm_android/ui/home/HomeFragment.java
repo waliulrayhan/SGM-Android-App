@@ -63,7 +63,63 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         try {
+            //==========================================================================================
+            // RecyclerView for displaying comments
+            RecyclerView recyclerView = binding.RVCentralCommand;
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            commentAdapter = new CommentAdapter(new ArrayList<>());
+            recyclerView.setAdapter(commentAdapter);
+
+            // Fetch comments from Firebase and update RecyclerView
+            fetchCommentData();
             fetchDataFromFirebase();
+
+            // Add swipe-to-delete functionality
+            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
+                private ColorDrawable background = new ColorDrawable(Color.RED);
+
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    // Swipe to delete
+                    int position = viewHolder.getAdapterPosition();
+                    commentAdapter.removeItem(position);
+                }
+
+                @Override
+                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                    View itemView = viewHolder.itemView;
+                    int itemHeight = itemView.getHeight();
+
+                    // Draw the red background
+                    background.setBounds(
+                            itemView.getRight() + (int) dX,
+                            itemView.getTop(),
+                            itemView.getRight(),
+                            itemView.getBottom()
+                    );
+                    background.draw(c);
+
+                    // Calculate position of delete icon
+                    int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                    int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                    int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
+                    int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
+                    int deleteIconRight = itemView.getRight() - deleteIconMargin;
+
+                    // Draw the delete icon
+                    deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                    deleteIcon.draw(c);
+                }
+            };
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
 
             //==========================================================================================
             // This is for Time and Date
@@ -160,63 +216,6 @@ public class HomeFragment extends Fragment {
                     dialog.show();
                 }
             });
-
-            //==========================================================================================
-            // RecyclerView for displaying comments
-            RecyclerView recyclerView = binding.RVCentralCommand;
-            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            commentAdapter = new CommentAdapter(new ArrayList<>());
-            recyclerView.setAdapter(commentAdapter);
-
-            // Fetch comments from Firebase and update RecyclerView
-            fetchCommentData();
-
-            // Add swipe-to-delete functionality
-            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
-                private ColorDrawable background = new ColorDrawable(Color.RED);
-
-                @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    // Swipe to delete
-                    int position = viewHolder.getAdapterPosition();
-                    commentAdapter.removeItem(position);
-                }
-
-                @Override
-                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-
-                    View itemView = viewHolder.itemView;
-                    int itemHeight = itemView.getHeight();
-
-                    // Draw the red background
-                    background.setBounds(
-                            itemView.getRight() + (int) dX,
-                            itemView.getTop(),
-                            itemView.getRight(),
-                            itemView.getBottom()
-                    );
-                    background.draw(c);
-
-                    // Calculate position of delete icon
-                    int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
-                    int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
-                    int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
-                    int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
-                    int deleteIconRight = itemView.getRight() - deleteIconMargin;
-
-                    // Draw the delete icon
-                    deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
-                    deleteIcon.draw(c);
-                }
-            };
-            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -226,77 +225,88 @@ public class HomeFragment extends Fragment {
     }
 
     private void uploadCentralCommandToFirebase(String inputData) {
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
 
-        // Reference to "SGM/Date/currentDate/comments"
-        DatabaseReference commentRef = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("SGM")
-                .child("Date")
-                .child(currentDate)
-                .child("comments");
+        try {
+            // Get the current date
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            String currentDate = dateFormat.format(new Date());
 
-        // Push the comment to generate a unique key
-        String commentKey = commentRef.push().getKey();
+            // Reference to "SGM/Date/currentDate/comments"
+            DatabaseReference commentRef = FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child("SGM")
+                    .child("Date")
+                    .child(currentDate)
+                    .child("comments");
 
-        // Create a map to hold the comment data
-        Map<String, Object> commentData = new HashMap<>();
-        commentData.put("comment", inputData);
+            // Push the comment to generate a unique key
+            String commentKey = commentRef.push().getKey();
 
-        // Upload the comment to Firebase using a transaction
-        if (commentKey != null) {
-            commentRef.child(commentKey).runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                    // Set the comment data
-                    mutableData.setValue(commentData);
-                    return Transaction.success(mutableData);
-                }
+            // Create a map to hold the comment data
+            Map<String, Object> commentData = new HashMap<>();
+            commentData.put("comment", inputData);
 
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                    if (databaseError == null) {
-                        // Comment uploaded successfully
-                        Log.d("UploadCentralCommand", "Comment uploaded successfully");
-                        // You can add any additional actions you want to perform on success
-                    } else {
-                        // Failed to upload comment
-                        Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
-                        // Handle the error, if needed
+            // Upload the comment to Firebase using a transaction
+            if (commentKey != null) {
+                commentRef.child(commentKey).runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        // Set the comment data
+                        mutableData.setValue(commentData);
+                        return Transaction.success(mutableData);
                     }
-                }
-            });
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        if (databaseError == null) {
+                            // Comment uploaded successfully
+                            Log.d("UploadCentralCommand", "Comment uploaded successfully");
+                            // You can add any additional actions you want to perform on success
+                        } else {
+                            // Failed to upload comment
+                            Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
+                            // Handle the error, if needed
+                        }
+                    }
+                });
+            }
+        }catch (Exception e) {
+            // Example: Displaying a toast message to the user
+            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void fetchCommentData() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            String currentDate = dateFormat.format(new Date());
 
-        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
-                .child("SGM").child("Date").child(currentDate).child("comments");
+            DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
+                    .child("SGM").child("Date").child(currentDate).child("comments");
 
-        commentRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Comment> comments = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String commentText = snapshot.child("comment").getValue(String.class);
-                    if (commentText != null) {
-                        comments.add(new Comment(commentText));
+            commentRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<Comment> comments = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String commentText = snapshot.child("comment").getValue(String.class);
+                        if (commentText != null) {
+                            comments.add(new Comment(commentText));
+                        }
                     }
+                    commentAdapter.setComments(comments);
                 }
-                commentAdapter.setComments(comments);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("FetchCommentData", "Failed to fetch comments: " + databaseError.getMessage());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("FetchCommentData", "Failed to fetch comments: " + databaseError.getMessage());
+                }
+            });
+        }catch (Exception e) {
+            // Example: Displaying a toast message to the user
+            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
