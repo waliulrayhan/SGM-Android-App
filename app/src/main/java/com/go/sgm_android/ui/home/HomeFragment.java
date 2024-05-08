@@ -2,6 +2,10 @@ package com.go.sgm_android.ui.home;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,9 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +38,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -162,6 +170,53 @@ public class HomeFragment extends Fragment {
 
             // Fetch comments from Firebase and update RecyclerView
             fetchCommentData();
+
+            // Add swipe-to-delete functionality
+            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
+                private ColorDrawable background = new ColorDrawable(Color.RED);
+
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    // Swipe to delete
+                    int position = viewHolder.getAdapterPosition();
+                    commentAdapter.removeItem(position);
+                }
+
+                @Override
+                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                    View itemView = viewHolder.itemView;
+                    int itemHeight = itemView.getHeight();
+
+                    // Draw the red background
+                    background.setBounds(
+                            itemView.getRight() + (int) dX,
+                            itemView.getTop(),
+                            itemView.getRight(),
+                            itemView.getBottom()
+                    );
+                    background.draw(c);
+
+                    // Calculate position of delete icon
+                    int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                    int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                    int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
+                    int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
+                    int deleteIconRight = itemView.getRight() - deleteIconMargin;
+
+                    // Draw the delete icon
+                    deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                    deleteIcon.draw(c);
+                }
+            };
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -190,25 +245,30 @@ public class HomeFragment extends Fragment {
         Map<String, Object> commentData = new HashMap<>();
         commentData.put("comment", inputData);
 
-        // Upload the comment to Firebase
+        // Upload the comment to Firebase using a transaction
         if (commentKey != null) {
-            commentRef.child(commentKey).setValue(commentData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Comment uploaded successfully
-                            Log.d("UploadCentralCommand", "Comment uploaded successfully");
-                            // You can add any additional actions you want to perform on success
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Failed to upload comment
-                            Log.e("UploadCentralCommand", "Failed to upload comment: " + e.getMessage());
-                            // Handle the error, if needed
-                        }
-                    });
+            commentRef.child(commentKey).runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                    // Set the comment data
+                    mutableData.setValue(commentData);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    if (databaseError == null) {
+                        // Comment uploaded successfully
+                        Log.d("UploadCentralCommand", "Comment uploaded successfully");
+                        // You can add any additional actions you want to perform on success
+                    } else {
+                        // Failed to upload comment
+                        Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
+                        // Handle the error, if needed
+                    }
+                }
+            });
         }
     }
 

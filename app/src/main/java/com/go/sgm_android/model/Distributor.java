@@ -23,6 +23,12 @@ public class Distributor {
         this.DDtargetDemand = DDtargetDemand;
     }
 
+    public Distributor(String DDname, float DDcurrentDemand, float DDtargetDemand) {
+        this.DDname = DDname;
+        this.DDcurrentDemand = DDcurrentDemand;
+        this.DDtargetDemand = DDtargetDemand;
+    }
+
     public String getDDdistributor() {
         return DDdistributor;
     }

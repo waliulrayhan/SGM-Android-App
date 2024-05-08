@@ -4,13 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.go.sgm_android.model.Comment;
 import com.go.sgm_android.R;
-
 import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
@@ -41,6 +38,12 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void setComments(List<Comment> comments) {
         this.commentList = comments;
         notifyDataSetChanged(); // Notify RecyclerView about the data change
+    }
+
+    // Method to remove a comment from the list
+    public void removeItem(int position) {
+        commentList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {

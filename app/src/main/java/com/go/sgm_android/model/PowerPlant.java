@@ -12,6 +12,7 @@ public class PowerPlant {
     private String PPname;
     private float PPcurrentCapacity;
     private float PPtargetCapacity;
+    private float PPtotalCurrentCapacity;
 
     public PowerPlant(String PPdivision, String PPdistrict, String PPupazilla, String PPoperator, String PPownership, String PPfuelType, String PPmethod, String PPoutput, String PPname) {
         this.PPdivision = PPdivision;
@@ -30,7 +31,6 @@ public class PowerPlant {
         this.PPcurrentCapacity = PPcurrentCapacity;
         this.PPtargetCapacity = PPtargetCapacity;
     }
-
 
     public String getPPname() {
         return PPname;
@@ -118,5 +118,13 @@ public class PowerPlant {
 
     public void setPPtargetCapacity(float PPtargetCapacity) {
         this.PPtargetCapacity = PPtargetCapacity;
+    }
+
+    public float getPPtotalCurrentCapacity() {
+        return PPtotalCurrentCapacity;
+    }
+
+    public void setPPtotalCurrentCapacity(float PPtotalCurrentCapacity) {
+        this.PPtotalCurrentCapacity = PPtotalCurrentCapacity;
     }
 }

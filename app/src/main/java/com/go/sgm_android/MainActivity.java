@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the interval to 1 day and specify the time for daily upload
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0); // 10 AM
-        calendar.set(Calendar.MINUTE, 11);
+        calendar.set(Calendar.MINUTE, 37);
         long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
         if (initialDelay < 0) {
             initialDelay += TimeUnit.DAYS.toMillis(1); // If the time has already passed today, set it for tomorrow

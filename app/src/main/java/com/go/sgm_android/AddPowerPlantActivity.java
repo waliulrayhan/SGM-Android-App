@@ -17,8 +17,12 @@ import com.go.sgm_android.databinding.ActivityAddPowerPlantBinding;
 import com.go.sgm_android.model.PowerPlant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -248,28 +252,33 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         // Create a map to store the power plant data
         PowerPlant powerPlant = new PowerPlant(division, district, upazilla, operator, ownership, fuelType, method, output, name);
 
-        // Push the power plant data to the database
-        powerPlantRef.setValue(powerPlant)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        progressDialog.dismiss();
-                        Intent intent = new Intent(AddPowerPlantActivity.this, MainActivity.class);
-                        // Start SecondActivity
-                        startActivity(intent);
-                        Toast.makeText(AddPowerPlantActivity.this, "Power plant added successfully", Toast.LENGTH_SHORT).show();
-                        // Clear input fields after successful addition
-                        binding.addPowerPlantEditText.setText("");
-                        binding.outputEditText.setText("");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(AddPowerPlantActivity.this, "Failed to add power plant: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        // Run a transaction to push the power plant data to the database
+        powerPlantRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                // Set the power plant data
+                mutableData.setValue(powerPlant);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                if (databaseError == null) {
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(AddPowerPlantActivity.this, MainActivity.class);
+                    // Start MainActivity
+                    startActivity(intent);
+                    Toast.makeText(AddPowerPlantActivity.this, "Power plant added successfully", Toast.LENGTH_SHORT).show();
+                    // Clear input fields after successful addition
+                    binding.addPowerPlantEditText.setText("");
+                    binding.outputEditText.setText("");
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(AddPowerPlantActivity.this, "Failed to add power plant: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void updateDistrictAutoCompleteTextView(int divisionPosition) {

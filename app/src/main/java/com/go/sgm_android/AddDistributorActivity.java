@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,8 +23,12 @@ import com.go.sgm_android.model.Distributor;
 import com.go.sgm_android.model.PowerPlant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 public class AddDistributorActivity extends AppCompatActivity {
 
@@ -136,31 +141,37 @@ public class AddDistributorActivity extends AppCompatActivity {
         // Reference to "SGM/PowerPlant"
         DatabaseReference distributorRef = mDatabase.child("SGM").child("Distributor").child(distributor).push();
 
-        // Create a map to store the power plant data
-        Distributor distributor1 = new Distributor(distributor, zone, circle, name);
+        // Create a map to store the distributor data
+        Distributor distributorData = new Distributor(distributor, zone, circle, name,0,0);
 
-        // Push the power plant data to the database
-        distributorRef.setValue(distributor1)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        progressDialog.dismiss();
-                        Intent intent = new Intent(AddDistributorActivity.this, MainActivity.class);
-                        // Start SecondActivity
-                        startActivity(intent);
-                        Toast.makeText(AddDistributorActivity.this, "Distributor added successfully", Toast.LENGTH_SHORT).show();
-                        // Clear input fields after successful addition
-                        binding.addDistributorEditText.setText("");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(AddDistributorActivity.this, "Failed to add distributor: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        // Run a transaction to push the distributor data to the database
+        distributorRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                // Set the distributor data
+                mutableData.setValue(distributorData);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                if (databaseError == null) {
+                    progressDialog.dismiss();
+                    Intent intent = new Intent(AddDistributorActivity.this, MainActivity.class);
+                    // Start MainActivity
+                    startActivity(intent);
+                    Toast.makeText(AddDistributorActivity.this, "Distributor added successfully", Toast.LENGTH_SHORT).show();
+                    // Clear input fields after successful addition
+                    binding.addDistributorEditText.setText("");
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(AddDistributorActivity.this, "Failed to add distributor: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
+
 
     private void updateZoneAutoCompleteTextView(int position) {
         // Update Zones AutoCompleteTextView based on selected distributor
