@@ -14,12 +14,12 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/view"
+            android:id="@+id/safeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FF1100"
+            android:backgroundTint="#FFFFFF"
             app:cornerRadius="0dp"
-            android:drawableLeft="@drawable/warning_24dp_fill"
+            android:textSize="16sp"
             android:text="Warning: Capacty Failed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +35,7 @@
             android:layout_marginTop="16dp"
             android:text="Time"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+            app:layout_constraintTop_toBottomOf="@+id/safeButton" />
 
         <TextView
             android:id="@+id/current_date"
@@ -45,7 +45,7 @@
             android:layout_marginEnd="16dp"
             android:text="Date"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+            app:layout_constraintTop_toBottomOf="@+id/safeButton" />
 
         <TextView
             android:id="@+id/text_home"

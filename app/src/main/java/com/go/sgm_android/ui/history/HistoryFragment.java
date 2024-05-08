@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import android.widget.Toast;
 
 import com.go.sgm_android.R;
 import com.go.sgm_android.databinding.FragmentHistoryBinding;
@@ -36,21 +37,26 @@ public class HistoryFragment extends Fragment {
         binding = FragmentHistoryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Initialize Firebase database reference
+        try {
+            // Initialize Firebase database reference
 //        databaseReference = FirebaseDatabase.getInstance().getReference().child("SGM");
 
-        // Date Picker
-        Button pickDateButton = root.findViewById(R.id.pickDate);
+            // Date Picker
+            Button pickDateButton = root.findViewById(R.id.pickDate);
 
-        historyTextView = root.findViewById(R.id.historyTextView);
-        pickDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Pass the button reference to the DatePickerFragment
-                DialogFragment newFragment = new DatePickerFragment(pickDateButton);
-                newFragment.show(getChildFragmentManager(), "datePicker");
-            }
-        });
+            historyTextView = root.findViewById(R.id.historyTextView);
+            pickDateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Pass the button reference to the DatePickerFragment
+                    DialogFragment newFragment = new DatePickerFragment(pickDateButton);
+                    newFragment.show(getChildFragmentManager(), "datePicker");
+                }
+            });
+        } catch (Exception e) {
+            // Example: Displaying a toast message to the user
+            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         return root;
     }

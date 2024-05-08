@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,113 +54,118 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        fetchDataFromFirebase();
+        try {
+            fetchDataFromFirebase();
 
-        //==========================================================================================
-        // This is for Time and Date
-        // Initialize TextViews for displaying current time and date
-        final TextView currentTimeTextView = binding.currentTime;
-        final TextView currentDateTextView = binding.currentDate;
+            //==========================================================================================
+            // This is for Time and Date
+            // Initialize TextViews for displaying current time and date
+            final TextView currentTimeTextView = binding.currentTime;
+            final TextView currentDateTextView = binding.currentDate;
 
-        // Initialize Handler for updating time and date every second
-        handler = new Handler();
-        updateTimeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Get current time and date
-                long currentTimeMillis = System.currentTimeMillis();
-                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss a", Locale.getDefault());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
-                String currentTimeString = timeFormat.format(new Date(currentTimeMillis));
-                String currentDateString = dateFormat.format(new Date(currentTimeMillis));
+            // Initialize Handler for updating time and date every second
+            handler = new Handler();
+            updateTimeRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    // Get current time and date
+                    long currentTimeMillis = System.currentTimeMillis();
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss a", Locale.getDefault());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+                    String currentTimeString = timeFormat.format(new Date(currentTimeMillis));
+                    String currentDateString = dateFormat.format(new Date(currentTimeMillis));
 
-                // Update TextViews
-                currentTimeTextView.setText("Time: "+currentTimeString);
-                currentDateTextView.setText("Date: "+currentDateString);
+                    // Update TextViews
+                    currentTimeTextView.setText("Time: "+currentTimeString);
+                    currentDateTextView.setText("Date: "+currentDateString);
 
-                // Schedule the next update after 1 second
-                handler.postDelayed(this, 1000);
-            }
-        };
+                    // Schedule the next update after 1 second
+                    handler.postDelayed(this, 1000);
+                }
+            };
 
-        // Start updating time and date
-        handler.post(updateTimeRunnable);
+            // Start updating time and date
+            handler.post(updateTimeRunnable);
 
-        binding.PP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
-                startActivity(intent);
-            }
-        });
+            binding.PP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
+                    startActivity(intent);
+                }
+            });
 
-        binding.DD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), DistributorListActivity.class);
-                startActivity(intent);
-            }
-        });
+            binding.DD.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(), DistributorListActivity.class);
+                    startActivity(intent);
+                }
+            });
 
-        binding.addCentralCommand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Inflate the dialog layout
-                View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
+            binding.addCentralCommand.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Inflate the dialog layout
+                    View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
 
-                // Find views in the dialog layout
-                EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
-                Button buttonSave = dialogView.findViewById(R.id.buttonSave);
-                Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
+                    // Find views in the dialog layout
+                    EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
+                    Button buttonSave = dialogView.findViewById(R.id.buttonSave);
+                    Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
 
-                // Create the dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setView(dialogView);
-                AlertDialog dialog = builder.create();
+                    // Create the dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setView(dialogView);
+                    AlertDialog dialog = builder.create();
 
-                // Set click listener for Save button
-                buttonSave.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Get input from EditText
-                        String inputData = editTextInput.getText().toString().trim();
+                    // Set click listener for Save button
+                    buttonSave.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Get input from EditText
+                            String inputData = editTextInput.getText().toString().trim();
 
-                        // Handle saving logic here
-                        // For example, you can save data to Firebase or perform other actions
+                            // Handle saving logic here
+                            // For example, you can save data to Firebase or perform other actions
 
-                        if (!inputData.isEmpty()){
-                            Toast.makeText(getContext(), "Hello "+inputData, Toast.LENGTH_SHORT).show();
-                            uploadCentralCommandToFirebase(inputData);
+                            if (!inputData.isEmpty()){
+                                Toast.makeText(getContext(), "Hello "+inputData, Toast.LENGTH_SHORT).show();
+                                uploadCentralCommandToFirebase(inputData);
+                            }
+
+                            // Dismiss the dialog
+                            dialog.dismiss();
                         }
+                    });
 
-                        // Dismiss the dialog
-                        dialog.dismiss();
-                    }
-                });
+                    // Set click listener for Cancel button
+                    buttonCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Dismiss the dialog without saving
+                            dialog.dismiss();
+                        }
+                    });
 
-                // Set click listener for Cancel button
-                buttonCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Dismiss the dialog without saving
-                        dialog.dismiss();
-                    }
-                });
+                    // Show the dialog
+                    dialog.show();
+                }
+            });
 
-                // Show the dialog
-                dialog.show();
-            }
-        });
+            //==========================================================================================
+            // RecyclerView for displaying comments
+            RecyclerView recyclerView = binding.RVCentralCommand;
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+            commentAdapter = new CommentAdapter(new ArrayList<>());
+            recyclerView.setAdapter(commentAdapter);
 
-        //==========================================================================================
-        // RecyclerView for displaying comments
-        RecyclerView recyclerView = binding.RVCentralCommand;
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        commentAdapter = new CommentAdapter(new ArrayList<>());
-        recyclerView.setAdapter(commentAdapter);
-
-        // Fetch comments from Firebase and update RecyclerView
-        fetchCommentData();
+            // Fetch comments from Firebase and update RecyclerView
+            fetchCommentData();
+        } catch (Exception e) {
+            // Example: Displaying a toast message to the user
+            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         return root;
     }
@@ -245,45 +251,44 @@ public class HomeFragment extends Fragment {
         String currentDate = dateFormat.format(new Date());
 
         // Construct the Firebase reference path for the current date
-        DatabaseReference ppReference = FirebaseDatabase.getInstance().getReference()
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("SGM").child("Date").child(currentDate);
-        ppReference.addValueEventListener(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Retrieve total node
+                    // Retrieve total nodes
                     DataSnapshot totalsSnapshot = dataSnapshot.child("total");
 
+                    // Fetch total current capacity value
                     float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
+                    // Fetch total current demand value
+                    float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
                     // Update UI with fetched values
                     binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
-                } else {
-                    // Handle case when data doesn't exist
-                    // You can display a message or take appropriate action
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle onCancelled
-            }
-        });
-
-        // Construct the Firebase reference path for the current date
-        DatabaseReference ddReference = FirebaseDatabase.getInstance().getReference()
-                .child("SGM").child("Date").child(currentDate);
-        ppReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Retrieve total node
-                    DataSnapshot totalsSnapshot = dataSnapshot.child("total");
-
-                    float totalCurrentCapacityValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
                     // Update UI with fetched values
-                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
+                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+
+                    // Compare total current capacity with total current demand
+                    if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue>10) {
+                        // If capacity is greater, set safeButton to green background and warning text
+                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
+                        binding.safeButton.setText("All Clear: Supply Meets Target Successfully");
+                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue<10) {
+                        // If capacity is greater, set safeButton to green background and warning text
+                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
+                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.warning_24dp_fill, 0, 0, 0);
+                        binding.safeButton.setText("Caution: Supply Nearing Target Fulfillment");
+                        binding.safeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                    } else {
+                        // If capacity is not greater, set safeButton to red background and safe text
+                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
+                        binding.safeButton.setText("Alert: Supply Failed to Meet the Target");
+                    }
                 } else {
                     // Handle case when data doesn't exist
                     // You can display a message or take appropriate action
@@ -296,4 +301,5 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 }

@@ -24,7 +24,7 @@
             android:layout_marginEnd="32dp"
             app:boxStrokeColor="@color/black"
             app:hintTextColor="@color/black"
-            android:hint="Select Devision"
+            android:hint="Select Division"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -177,6 +177,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/outputEditText"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
