@@ -67,23 +67,23 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="80dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="80dp"
-            android:layout_marginBottom="50dp"
-            android:height="55dp"
-            android:text="Search"
-            android:textSize="18sp"
-            app:backgroundTint="#03A9F4"
-            app:cornerRadius="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_type"
-            tools:ignore="VisualLintButtonSize" />
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/searchButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="80dp"-->
+<!--            android:layout_marginTop="24dp"-->
+<!--            android:layout_marginEnd="80dp"-->
+<!--            android:layout_marginBottom="50dp"-->
+<!--            android:height="55dp"-->
+<!--            android:text="Search"-->
+<!--            android:textSize="18sp"-->
+<!--            app:backgroundTint="#03A9F4"-->
+<!--            app:cornerRadius="5dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_type"-->
+<!--            tools:ignore="VisualLintButtonSize" />-->
 
         <!-- TextViews for displaying dynamic history data will be added here programmatically -->
         <TextView
@@ -95,7 +95,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchButton" />
+            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_type" />
 
 <!--        <TextView-->
 <!--            android:id="@+id/historyDataTextView"-->
@@ -111,9 +111,10 @@
             android:id="@+id/powerPlantList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchButton" />
+            app:layout_constraintTop_toBottomOf="@+id/dropdown_menu_type" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/distributorList"
@@ -176,8 +177,10 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
             android:backgroundTint="#FFFFFF"
             app:cardCornerRadius="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card">

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,10 +40,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class HistoryFragment extends Fragment {
@@ -69,6 +73,8 @@ public class HistoryFragment extends Fragment {
             text = root.findViewById(R.id.textView7);
 
             binding.dataTextView.setVisibility(View.GONE);
+            binding.card.setVisibility(View.GONE);
+            binding.card2.setVisibility(View.GONE);
             pickDateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -90,12 +96,35 @@ public class HistoryFragment extends Fragment {
             // Set a listener for the typeAutoCompleteTextView to fetch data accordingly
             typeAutoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
                 String selectedType = (String) parent.getItemAtPosition(position);
-                if (selectedType.equals("Power Plant")) {
-                    name = "Power Plant";
-                } else if (selectedType.equals("Distributor")) {
-                    name = "Distributor";
+
+                if (selectedType.isEmpty() && selectedDate.isEmpty()) {
+                    // Both name and selectedDate are empty
+                    Toast.makeText(getContext(), "Please select a type and a date", Toast.LENGTH_SHORT).show();
+                } else if (selectedType.isEmpty()) {
+                    // Name is empty
+                    Toast.makeText(getContext(), "Please select a type", Toast.LENGTH_SHORT).show();
+                } else if (selectedDate.isEmpty()) {
+                    // Selected date is empty
+                    Toast.makeText(getContext(), "Please select a date", Toast.LENGTH_SHORT).show();
                 } else {
-                    name = "All Data";
+                    // Both name and selectedDate are not empty, proceed with search
+                    // Here you can implement the logic for searching based on name and selectedDate
+                    // For now, let's just show a toast message indicating search is triggered
+
+                    if (selectedType.equals("All Data")){
+                        powerPlantAdapter.clear();
+                        distributorAdapter.clear();
+                        fetchDataFromFirebase3(selectedType, selectedDate);
+                        fetchTotalDataFromFirebase3(selectedDate);
+                    } else if (selectedType.equals("Power Plant")) {
+                        distributorAdapter.clear();
+                        fetchDataFromFirebase1(selectedType, selectedDate);
+                        fetchTotalDataFromFirebase1(selectedDate);
+                    } else if (selectedType.equals("Distributor")){
+                        powerPlantAdapter.clear();
+                        fetchDataFromFirebase2(selectedType, selectedDate);
+                        fetchTotalDataFromFirebase2(selectedDate);
+                    }
                 }
             });
 
@@ -121,40 +150,6 @@ public class HistoryFragment extends Fragment {
             // Set up adapter
             recyclerView2.setAdapter(distributorAdapter);
 
-            binding.searchButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    String selectedDate = pickDateButton.getText().toString().trim();
-
-                    if (name.isEmpty() && selectedDate.isEmpty()) {
-                        // Both name and selectedDate are empty
-                        Toast.makeText(getContext(), "Please select a type and a date", Toast.LENGTH_SHORT).show();
-                    } else if (name.isEmpty()) {
-                        // Name is empty
-                        Toast.makeText(getContext(), "Please select a type", Toast.LENGTH_SHORT).show();
-                    } else if (selectedDate.isEmpty()) {
-                        // Selected date is empty
-                        Toast.makeText(getContext(), "Please select a date", Toast.LENGTH_SHORT).show();
-                    } else {
-                        // Both name and selectedDate are not empty, proceed with search
-                        // Here you can implement the logic for searching based on name and selectedDate
-                        // For now, let's just show a toast message indicating search is triggered
-
-                        if (name.equals("All Data")){
-                            powerPlantAdapter.clear();
-                            distributorAdapter.clear();
-                            fetchDataFromFirebase3(name, selectedDate);
-                        } else if (name.equals("Power Plant")) {
-                            distributorAdapter.clear();
-                            fetchDataFromFirebase1(name, selectedDate);
-                        } else if (name.equals("Distributor")){
-                            powerPlantAdapter.clear();
-                            fetchDataFromFirebase2(name, selectedDate);
-                        }
-                    }
-                }
-            });
-
         } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -165,37 +160,47 @@ public class HistoryFragment extends Fragment {
 
     private void fetchDataFromFirebase1(String name, String selectedDate) {
 
-        DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
-        powerPlantRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<PowerPlant> powerPlants = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String key = snapshot.getKey();
-                    if (snapshot.child("ppname").exists() && snapshot.child("Date").child(selectedDate).exists()) {
-                        binding.dataTextView.setVisibility(View.GONE);
+        try {
+            // Construct the Firebase reference path for the current date
+            DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+            powerPlantRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<PowerPlant> powerPlants = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String key = snapshot.getKey();
+                        if (snapshot.child("ppname").exists() && snapshot.child("Date").child(selectedDate).exists()) {
+                            binding.dataTextView.setVisibility(View.GONE);
+//                            binding.card.setVisibility(View.VISIBLE);
 
-                        String name = snapshot.child("ppname").getValue(String.class);
-                        float currentCapacity = snapshot.child("Date").child(selectedDate).child("capacity").child("pptargetCapacity").getValue(float.class);
-                        float targetCapacity = snapshot.child("Date").child(selectedDate).child("total").child("pptotalCurrentCapacity").getValue(float.class);
-                        // You can also fetch other fields similarly
-                        PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
-                        powerPlants.add(powerPlant);
-                    }else {
-                        binding.dataTextView.setText("No Data Found for the Selected Date");
-                        binding.dataTextView.setVisibility(View.VISIBLE);
+                            String name = snapshot.child("ppname").getValue(String.class);
+                            float currentCapacity = snapshot.child("Date").child(selectedDate).child("capacity").child("pptargetCapacity").getValue(float.class);
+                            float targetCapacity = snapshot.child("Date").child(selectedDate).child("total").child("pptotalCurrentCapacity").getValue(float.class);
+                            // You can also fetch other fields similarly
+                            PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
+                            powerPlants.add(powerPlant);
+                        }else {
+                            binding.dataTextView.setText("No Data Found for the Selected Date");
+                            binding.dataTextView.setVisibility(View.VISIBLE);
+
+//                            binding.card.setVisibility(View.GONE);
+//                            binding.card2.setVisibility(View.GONE);
+                        }
                     }
+                    // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
+                    // If needed, add logic here to merge or process data from both references
+                    powerPlantAdapter.setPowerPlants(powerPlants);
                 }
-                // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
-                // If needed, add logic here to merge or process data from both references
-                powerPlantAdapter.setPowerPlants(powerPlants);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
+                }
+            });
+        }catch (Exception e){
+            // Example: Displaying a toast message to the user
+            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void fetchDataFromFirebase2(String name, String selectedDate) {
@@ -220,6 +225,7 @@ public class HistoryFragment extends Fragment {
 
                     if (snapshot.child("Date").child(selectedDate).exists()) {
                         binding.dataTextView.setVisibility(View.GONE);
+                        binding.card2.setVisibility(View.VISIBLE);
 
                         float currentDemand = snapshot.child("Date").child(selectedDate).child("total").child("ddtotalCurrentdemand").getValue(float.class);
                         float targetDemand = snapshot.child("Date").child(selectedDate).child("demand").child("ddtargetdemand").getValue(float.class);
@@ -229,6 +235,9 @@ public class HistoryFragment extends Fragment {
                     }else {
                         binding.dataTextView.setText("No Data Found for the Selected Date");
                         binding.dataTextView.setVisibility(View.VISIBLE);
+
+                        binding.card.setVisibility(View.GONE);
+                        binding.card2.setVisibility(View.GONE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -253,6 +262,8 @@ public class HistoryFragment extends Fragment {
                     String key = snapshot.getKey();
                     if (snapshot.child("ppname").exists() && snapshot.child("Date").child(selectedDate).exists()) {
                         binding.dataTextView.setVisibility(View.GONE);
+                        binding.card.setVisibility(View.VISIBLE);
+                        binding.card2.setVisibility(View.VISIBLE);
 
                         String name = snapshot.child("ppname").getValue(String.class);
                         float currentCapacity = snapshot.child("Date").child(selectedDate).child("capacity").child("pptargetCapacity").getValue(float.class);
@@ -263,6 +274,9 @@ public class HistoryFragment extends Fragment {
                     }else {
                         binding.dataTextView.setText("No Data Found for the Selected Date");
                         binding.dataTextView.setVisibility(View.VISIBLE);
+
+                        binding.card.setVisibility(View.GONE);
+                        binding.card2.setVisibility(View.GONE);
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
@@ -320,6 +334,147 @@ public class HistoryFragment extends Fragment {
         });
     }
 
+    private void fetchTotalDataFromFirebase1(String selectedDate) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("SGM").child("Date").child(selectedDate);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve total nodes
+                    DataSnapshot totalsSnapshot = dataSnapshot.child("total");
+
+                    // Fetch total target capacity value
+                    float totaltargetCapacityValue = totalsSnapshot.child("AllpptargetCapacity").getValue(float.class);
+                    // Fetch total current capacity value
+                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
+                    // Fetch total target Demand value
+//                        float totaltargetDemandValue = totalsSnapshot.child("AllddtargetDemand").getValue(float.class);
+                    // Fetch total current Demand value
+//                        float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
+
+                    binding.dataTextView.setVisibility(View.GONE);
+                    binding.card.setVisibility(View.VISIBLE);
+                    binding.card2.setVisibility(View.GONE);
+//                     Update UI with fetched values
+                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: "+String.valueOf(totaltargetCapacityValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
+//                     Update UI with fetched values
+//                    binding.ddTotalCurrentDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totalCurrentDemandValue)+" MW");
+//                     Update UI with fetched values
+//                    binding.ddTotalCurrentDemand.setText("Total Demand Supply: "+String.valueOf(totalCurrentDemandValue)+" MW");
+                } else {
+                    // Handle case when data doesn't exist
+                    // You can display a message or take appropriate action
+                    binding.dataTextView.setText("No Data Found for the Selected Date");
+                    binding.dataTextView.setVisibility(View.VISIBLE);
+
+                    binding.card.setVisibility(View.GONE);
+                    binding.card2.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled
+            }
+        });
+    }
+
+    private void fetchTotalDataFromFirebase2(String selectedDate) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("SGM").child("Date").child(selectedDate);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve total nodes
+                    DataSnapshot totalsSnapshot = dataSnapshot.child("total");
+
+                    // Fetch total target capacity value
+//                    float totaltargetCapacityValue = totalsSnapshot.child("AllpptargetCapacity").getValue(float.class);
+                    // Fetch total current capacity value
+//                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
+                    // Fetch total target Demand value
+                        float totaltargetDemandValue = totalsSnapshot.child("AllddtargetDemand").getValue(float.class);
+                    // Fetch total current Demand value
+                        float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
+
+                    binding.dataTextView.setVisibility(View.GONE);
+                    binding.card2.setVisibility(View.VISIBLE);
+                    binding.card.setVisibility(View.GONE);
+//                     Update UI with fetched values
+//                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: "+String.valueOf(totaltargetCapacityValue)+" MW");
+//                     Update UI with fetched values
+//                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totaltargetDemandValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllddcurrentDemand.setText("Total Demand Supply: "+String.valueOf(totalCurrentDemandValue)+" MW");
+                } else {
+                    // Handle case when data doesn't exist
+                    // You can display a message or take appropriate action
+                    binding.dataTextView.setText("No Data Found for the Selected Date");
+                    binding.dataTextView.setVisibility(View.VISIBLE);
+
+                    binding.card.setVisibility(View.GONE);
+                    binding.card2.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled
+            }
+        });
+    }
+
+    private void fetchTotalDataFromFirebase3(String selectedDate) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("SGM").child("Date").child(selectedDate);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Retrieve total nodes
+                    DataSnapshot totalsSnapshot = dataSnapshot.child("total");
+
+                    // Fetch total target capacity value
+                    float totaltargetCapacityValue = totalsSnapshot.child("AllpptargetCapacity").getValue(float.class);
+                    // Fetch total current capacity value
+                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
+                    // Fetch total target Demand value
+                    float totaltargetDemandValue = totalsSnapshot.child("AllddtargetDemand").getValue(float.class);
+                    // Fetch total current Demand value
+                    float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
+
+                    binding.dataTextView.setVisibility(View.GONE);
+                    binding.card2.setVisibility(View.VISIBLE);
+                    binding.card.setVisibility(View.VISIBLE);
+//                     Update UI with fetched values
+                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: "+String.valueOf(totaltargetCapacityValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totaltargetDemandValue)+" MW");
+//                     Update UI with fetched values
+                    binding.AllddcurrentDemand.setText("Total Demand Supply: "+String.valueOf(totalCurrentDemandValue)+" MW");
+                } else {
+                    // Handle case when data doesn't exist
+                    // You can display a message or take appropriate action
+                    binding.dataTextView.setText("No Data Found for the Selected Date");
+                    binding.dataTextView.setVisibility(View.VISIBLE);
+
+                    binding.card.setVisibility(View.GONE);
+                    binding.card2.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle onCancelled
+            }
+        });
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -334,8 +489,9 @@ public class HistoryFragment extends Fragment {
         public DatePickerFragment(Button pickDateButton) {
             this.pickDateButton = pickDateButton;
 
-            // Set maximum date to today
+            // Set maximum date to yesterday
             maxDateCalendar = Calendar.getInstance();
+            maxDateCalendar.add(Calendar.DAY_OF_MONTH, -1);
         }
 
         @NonNull
@@ -350,7 +506,7 @@ public class HistoryFragment extends Fragment {
             // Create a new instance of DatePickerDialog and return it.
             DatePickerDialog dialog = new DatePickerDialog(requireContext(), this, year, month, day);
 
-            // Set maximum date to today
+            // Set maximum date to yesterday
             dialog.getDatePicker().setMaxDate(maxDateCalendar.getTimeInMillis());
 
             return dialog;
