@@ -1,5 +1,6 @@
 package com.go.sgm_android.Adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.go.sgm_android.PowerPlantDetailsActivity;
 import com.go.sgm_android.R;
 import com.go.sgm_android.model.PowerPlant;
 
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.PowerPlantViewHolder> {
 
-    private List<PowerPlant> powerPlants;
+    private static List<PowerPlant> powerPlants;
 
     public PowerPlantAdapter(List<PowerPlant> powerPlants) {
         this.powerPlants = powerPlants;
@@ -51,14 +53,29 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
         public PowerPlantViewHolder(@NonNull View itemView) {
             super(itemView);
             powerPlantName = itemView.findViewById(R.id.PP_name);
-            currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity); // Assuming these are the ids in your item layout
-            targetCapacity = itemView.findViewById(R.id.PP_Max_Output); // Assuming these are the ids in your item layout
+            currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity);
+            targetCapacity = itemView.findViewById(R.id.PP_Max_Output);
+
+            // Set click listener
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Get the clicked power plant
+                    PowerPlant selectedPowerPlant = powerPlants.get(getAdapterPosition());
+                    // Start Details Activity and pass the selected power plant data
+                    Intent intent = new Intent(itemView.getContext(), PowerPlantDetailsActivity.class);
+                    intent.putExtra("POWER_PLANT_NAME", selectedPowerPlant.getPPname());
+                    intent.putExtra("CURRENT_CAPACITY", selectedPowerPlant.getPPcurrentCapacity());
+                    intent.putExtra("TARGET_CAPACITY", selectedPowerPlant.getPPtargetCapacity());
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
 
         void bind(PowerPlant powerPlant) {
             powerPlantName.setText(powerPlant.getPPname());
-            currentCapacity.setText("Current Capacity: "+powerPlant.getPPcurrentCapacity()+" MW"); // Convert long to String
-            targetCapacity.setText("Target Capacity: "+powerPlant.getPPtargetCapacity()+" MW"); // Convert long to String
+            currentCapacity.setText("Current Capacity: " + powerPlant.getPPcurrentCapacity() + " MW");
+            targetCapacity.setText("Target Capacity: " + powerPlant.getPPtargetCapacity() + " MW");
         }
     }
 }

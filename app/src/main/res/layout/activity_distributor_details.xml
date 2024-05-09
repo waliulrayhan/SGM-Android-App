@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewDistributorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distributor Name"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewCurrentDemand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Demand: "
+        android:textSize="16sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewTargetDemand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Target Demand: "
+        android:textSize="16sp"/>
+
+</LinearLayout>

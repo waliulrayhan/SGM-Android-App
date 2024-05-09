@@ -40,10 +40,14 @@ public class AddDistributorActivity extends AppCompatActivity {
 
 
     // Define your distributor, zone, and circle arrays here
-    private String[] distributor = {"BPDB - Bangladesh Power Development Board", "DESCO - Dhaka Electric Supply Company Limited"};
+    private String[] distributor = {"BPDB - Bangladesh Power Development Board", "BREB - Bangladesh Rural Electrification Board", "DESCO - Dhaka Electric Supply Company Limited", "DPDC - Dhaka Power Distribution Company Limited", "WZPDCL - West Zone Power Distribution Company", "NESCO - Northern Electricity Supply Company PLC"};
     private String[][] zone = {
             {"Chattogram (South Zone)", "Mymensingh (Central Zone)", "Cumilla Zone", "Sylhet Zone"},
-            {"North Zone", "Central Zone", "South Zone"}
+            {"No Circle"},
+            {"North Zone", "Central Zone", "South Zone"},
+            {"South Zone", "North Zone", "Central Zone"},
+            {"No Circle"},
+            {"Rajshahi Zone", "Rangpur Zone"}
     };
     private String[][][] circle = {
             {
@@ -51,6 +55,26 @@ public class AddDistributorActivity extends AppCompatActivity {
                     {"Conservation and Management Circle-1, Mymensingh", "Conservation and Management Circle-2, Mymensingh", "Conservation and Management Circle, Tangail", "Conservation and Management Circle, Jamalpur"},
                     {"Conservation and Management Circle, Cumilla", "Conservation and Management Circle, Noakhali", "Gopalpur"},
                     {"Conservation and Management Circle, Sylhet", "Conservation and Management Circle, Moulvibazar"}
+            },
+            {
+                    {"Tongi", "Uttara", "Dakshinkhan"},
+                    {"Baridhara", "Gulshan"},
+                    {"Pallabi", "Agargaon", "Rupnagar"}
+            },
+            {
+                    {"Tongi", "Uttara", "Dakshinkhan"},
+                    {"Baridhara", "Gulshan"},
+                    {"Pallabi", "Agargaon", "Rupnagar"}
+            },
+            {
+                    {"Tongi", "Uttara", "Dakshinkhan"},
+                    {"Baridhara", "Gulshan"},
+                    {"Pallabi", "Agargaon", "Rupnagar"}
+            },
+            {
+                    {"Tongi", "Uttara", "Dakshinkhan"},
+                    {"Baridhara", "Gulshan"},
+                    {"Pallabi", "Agargaon", "Rupnagar"}
             },
             {
                     {"Tongi", "Uttara", "Dakshinkhan"},
