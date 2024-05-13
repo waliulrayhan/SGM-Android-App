@@ -204,35 +204,35 @@ public class AddDistributorActivity extends AppCompatActivity {
         });
     }
 
-    public static void uploadDDDataToFirebase() {
-        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
-
-        // Get the current date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
-
-        // Upload Distributor Data
-        DatabaseReference distributorRef = databaseRef.child("Distributor");
-        distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
-                    DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(currentDate).getRef();
-                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue(0);
-                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(0);
-                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue(0);
-                    distributorDateRef.child("alert").setValue("false");
-                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue(0);
-                    distributorDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("UploadDataToFirebase", "Failed to upload distributor data: " + databaseError.getMessage());
-            }
-        });
-    }
+//    public static void uploadDDDataToFirebase() {
+//        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
+//
+//        // Get the current date
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+//        String currentDate = dateFormat.format(new Date());
+//
+//        // Upload Distributor Data
+//        DatabaseReference distributorRef = databaseRef.child("Distributor");
+//        distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
+//                    DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(currentDate).getRef();
+//                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue(0);
+//                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(0);
+//                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue(0);
+//                    distributorDateRef.child("alert").setValue("false");
+//                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue(0);
+//                    distributorDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.e("UploadDataToFirebase", "Failed to upload distributor data: " + databaseError.getMessage());
+//            }
+//        });
+//    }
 
 
     private void updateZoneAutoCompleteTextView(int position) {
