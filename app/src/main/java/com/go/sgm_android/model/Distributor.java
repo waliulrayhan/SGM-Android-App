@@ -8,7 +8,7 @@ public class Distributor {
     private float DDcurrentDemand;
     private float DDtargetDemand;
 
-    public Distributor(String DDname, String DDzone, String DDcircle,String DDdistributo) {
+    public Distributor(String DDname, String DDzone, String DDcircle,String DDdistributor) {
         this.DDname = DDname;
         this.DDzone = DDzone;
         this.DDcircle = DDcircle;

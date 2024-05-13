@@ -27,7 +27,7 @@ public class HistoryPowerPlantAdapter extends RecyclerView.Adapter<HistoryPowerP
     @NonNull
     @Override
     public HistoryPowerPlantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_power_plant, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history_power_plant, parent, false);
         return new HistoryPowerPlantViewHolder(view);
     }
 
@@ -50,18 +50,32 @@ public class HistoryPowerPlantAdapter extends RecyclerView.Adapter<HistoryPowerP
         TextView powerPlantName;
         TextView currentCapacity;
         TextView targetCapacity;
+        TextView alert;
 
         public HistoryPowerPlantViewHolder(@NonNull View itemView) {
             super(itemView);
             powerPlantName = itemView.findViewById(R.id.PP_name);
-            currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity); // Assuming these are the ids in your item layout
+            currentCapacity = itemView.findViewById(R.id.PP_Supply); // Assuming these are the ids in your item layout
             targetCapacity = itemView.findViewById(R.id.PP_Max_Output); // Assuming these are the ids in your item layout
+            alert = itemView.findViewById(R.id.PP_Alert); // Assuming these are the ids in your item layout
         }
 
         void bind(PowerPlant powerPlant) {
             powerPlantName.setText("Power Plant\n"+powerPlant.getPPname());
             currentCapacity.setText("Supply: " + powerPlant.getPPcurrentCapacity() + " MW"); // Convert long to String
             targetCapacity.setText("Target: " + powerPlant.getPPtargetCapacity() + " MW"); // Convert long to String
+
+            // Compare totalCapacity and targetCapacity
+            float totalValue = powerPlant.getPPcurrentCapacity();
+            float targetValue = powerPlant.getPPtargetCapacity();
+
+            if (totalValue < targetValue) {
+                alert.setText("Alert, failed");
+            } else if (totalValue > targetValue) {
+                alert.setText("Success Ok");
+            } else {
+                alert.setText("Taget and Total Capacity is Equal");
+            }
         }
     }
 }
