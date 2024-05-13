@@ -95,7 +95,7 @@ public class SetTargetActivity extends AppCompatActivity {
                 // Set the adapter for distributor names
                 nameAutoCompleteTextView.setAdapter(ddnameAdapter);
                 // Show hardcoded distributor names
-                String[] distributorNames = {"BPDB - Bangladesh Power Development Board", "BREB - Bangladesh Rural Electrification Board", "DESCO - Dhaka Electric Supply Company Limited", "DPDC - Dhaka Power Distribution Company Limited", "WZPDCL - West Zone Power Distribution Company", "NESCO - Northern Electricity Supply Company PLC"};
+                String[] distributorNames = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
                 ddnameAdapter.clear();
                 ddnameAdapter.addAll(distributorNames);
                 ddnameAdapter.notifyDataSetChanged();

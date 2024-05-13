@@ -110,11 +110,11 @@ public class DistributorListActivity extends AppCompatActivity {
                     // Distributor keys mapping
                     Map<String, String> distributorKeysMap = new HashMap<>();
                     distributorKeysMap.put("BPDB", "Bangladesh Power Development Board");
-//                    distributorKeysMap.put("BREB", "Bangladesh Rural Electrification Board");
+                    distributorKeysMap.put("BREB", "Bangladesh Rural Electrification Board");
                     distributorKeysMap.put("DESCO", "Dhaka Electric Supply Company Limited");
-//                    distributorKeysMap.put("DPDC", "Dhaka Power Distribution Company Limited");
-//                    distributorKeysMap.put("WZPDCL", "West Zone Power Distribution Company");
-//                    distributorKeysMap.put("NESCO", "Northern Electricity Supply Company PLC");
+                    distributorKeysMap.put("DPDC", "Dhaka Power Distribution Company Limited");
+                    distributorKeysMap.put("NESCO", "Northern Electricity Supply Company PLC");
+                    distributorKeysMap.put("WZPDCL", "West Zone Power Distribution Company Limited");
 
                     // Extract distributor key and name
                     String distributorKey = snapshot.getKey();
@@ -139,67 +139,4 @@ public class DistributorListActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private void fetchDataFromDatabase() {
-//        // Get the current date
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-//        String currentDate = dateFormat.format(new Date());
-//
-//        DatabaseReference BPDBRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("BPDB - Bangladesh Power Development Board").child("Date").child(currentDate);
-//        DatabaseReference BREBRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("BREB - Bangladesh Rural Electrification Board").child("Date").child(currentDate);
-//        DatabaseReference DESCORef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("DESCO - Dhaka Electric Supply Company Limited").child("Date").child(currentDate);
-//        DatabaseReference DPDCRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("DPDC - Dhaka Power Distribution Company Limited").child("Date").child(currentDate);
-//        DatabaseReference WZPDCLRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("WZPDCL - West Zone Power Distribution Company").child("Date").child(currentDate);
-//        DatabaseReference NESCORef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor").child("NESCO - Northern Electricity Supply Company PLC").child("Date").child(currentDate);
-//
-//        BPDBRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    // Retrieve total node
-//                    DataSnapshot demandSnapshot = dataSnapshot.child("demand");
-//
-//                    float totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(float.class);
-//                    float totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(float.class);
-//
-//                    // Update UI with fetched values
-//                    binding.BPDBTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
-//                    binding.BPDBTotalTargetDemand.setText("Target Demand: "+String.valueOf(totaltargetdemandValue)+" MW");
-//                } else {
-//                    // Handle case when data doesn't exist
-//                    // You can display a message or take appropriate action
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
-//            }
-//        });
-//
-//        DESCORef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    // Retrieve total node
-//                    DataSnapshot demandSnapshot = dataSnapshot.child("demand");
-//
-//                    float totalCurrentdemandValue = demandSnapshot.child("ddcurrentDemand").getValue(float.class);
-//                    float totaltargetdemandValue = demandSnapshot.child("ddtargetdemand").getValue(float.class);
-//
-//                    // Update UI with fetched values
-//                    binding.DESCOTotalCurrentDemand.setText("Current Demand: "+String.valueOf(totalCurrentdemandValue)+" MW");
-//                    binding.DESCOTotalTargetDemand.setText("Target Demand: "+String.valueOf(totaltargetdemandValue)+" MW");
-//                } else {
-//                    // Handle case when data doesn't exist
-//                    // You can display a message or take appropriate action
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
-//            }
-//        });
-//    }
 }
