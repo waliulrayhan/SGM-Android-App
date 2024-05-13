@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -40,7 +41,43 @@ public class UploadWorker extends Worker {
 
         // Get the current date
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
         String currentDate = dateFormat.format(new Date());
+
+//        // Move the DatabaseReference creation outside of the loop
+//        DatabaseReference powerPlantRef = databaseRef.child("PowerPlant");
+//
+//        for (int i = 0; i < 7; i++) {
+//            String nextDate = dateFormat.format(calendar.getTime());
+//
+//            DatabaseReference powerPlantDateRef = powerPlantRef.getRef().child("Date").child(nextDate);
+//
+//            powerPlantDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        if (!dataSnapshot.exists()) {
+//                            // Upload PowerPlant data for the date
+//                            DatabaseReference powerPlantDateRef = snapshot.child("Date").child(nextDate).getRef();
+//                            powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue(0);
+//                            powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(0);
+//                            powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue(0);
+//                            powerPlantDateRef.child("alert").setValue("false");
+//                            powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue(0);
+//                            powerPlantDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                    Log.e("UploadDataToFirebase", "Failed to upload data: " + databaseError.getMessage());
+//                }
+//            });
+//
+//            // Move to the next date
+//            calendar.add(Calendar.DATE, 1);
+//        }
 
         // Upload PowerPlant data
         DatabaseReference powerPlantRef = databaseRef.child("PowerPlant");
@@ -65,6 +102,8 @@ public class UploadWorker extends Worker {
                 Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
             }
         });
+
+
 
         // Upload Distributor Data
         DatabaseReference distributorRef = databaseRef.child("Distributor");

@@ -49,12 +49,14 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
         TextView powerPlantName;
         TextView currentCapacity;
         TextView targetCapacity;
+        TextView totalCapacity;
 
         public PowerPlantViewHolder(@NonNull View itemView) {
             super(itemView);
             powerPlantName = itemView.findViewById(R.id.PP_name);
-            currentCapacity = itemView.findViewById(R.id.PP_total_current_capacity);
+            currentCapacity = itemView.findViewById(R.id.PP_current_capacity);
             targetCapacity = itemView.findViewById(R.id.PP_Max_Output);
+//            totalCapacity = itemView.findViewById(R.id.PP_total_current_capacity);
 
             // Set click listener
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +78,7 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
             powerPlantName.setText(powerPlant.getPPname());
             currentCapacity.setText("Current Capacity: " + powerPlant.getPPcurrentCapacity() + " MW");
             targetCapacity.setText("Target Capacity: " + powerPlant.getPPtargetCapacity() + " MW");
+//            totalCapacity.setText("Total Current Capacity: " + powerPlant.getPPtotalCurrentCapacity() + " MW");
         }
     }
 }

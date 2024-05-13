@@ -31,6 +31,12 @@ public class PowerPlant {
         this.PPcurrentCapacity = PPcurrentCapacity;
         this.PPtargetCapacity = PPtargetCapacity;
     }
+    public PowerPlant(String PPname, float PPcurrentCapacity, float PPtargetCapacity, float PPtotalCurrentCapacity) {
+        this.PPname = PPname;
+        this.PPcurrentCapacity = PPcurrentCapacity;
+        this.PPtargetCapacity = PPtargetCapacity;
+        this.PPtotalCurrentCapacity = PPtotalCurrentCapacity;
+    }
 
     public String getPPname() {
         return PPname;

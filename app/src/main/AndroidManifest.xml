@@ -25,11 +25,6 @@
             android:name=".PowerPlantDetailsActivity"
             android:exported="false"
             android:parentActivityName=".PowerPlantListActivity" />
-        <service
-            android:name=".ContinuousUpdateService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".SetTargetActivity"
             android:exported="false"

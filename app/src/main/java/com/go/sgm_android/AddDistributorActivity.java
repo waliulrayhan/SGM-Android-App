@@ -1,8 +1,10 @@
 package com.go.sgm_android;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,6 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class AddDistributorActivity extends AppCompatActivity {
 
@@ -40,7 +47,7 @@ public class AddDistributorActivity extends AppCompatActivity {
 
 
     // Define your distributor, zone, and circle arrays here
-    private String[] distributor = {"BPDB - Bangladesh Power Development Board", "BREB - Bangladesh Rural Electrification Board", "DESCO - Dhaka Electric Supply Company Limited", "DPDC - Dhaka Power Distribution Company Limited", "WZPDCL - West Zone Power Distribution Company", "NESCO - Northern Electricity Supply Company PLC"};
+    private String[] distributor = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
     private String[][] zone = {
             {"Chattogram (South Zone)", "Mymensingh (Central Zone)", "Cumilla Zone", "Sylhet Zone"},
             {"No Circle"},
@@ -154,6 +161,7 @@ public class AddDistributorActivity extends AppCompatActivity {
                     Toast.makeText(AddDistributorActivity.this, "Hello "+distributor+zone+circle+name, Toast.LENGTH_LONG).show();
                     progressDialog.show();
                     addDistributorToDatabase(distributor, zone, circle, name);
+//                    uploadDDDataToFirebase();
                 } else {
                     Toast.makeText(AddDistributorActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 }
@@ -192,6 +200,36 @@ public class AddDistributorActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     Toast.makeText(AddDistributorActivity.this, "Failed to add distributor: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    public static void uploadDDDataToFirebase() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
+
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Upload Distributor Data
+        DatabaseReference distributorRef = databaseRef.child("Distributor");
+        distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot distributorSnapshot : dataSnapshot.getChildren()) {
+                    DatabaseReference distributorDateRef = distributorSnapshot.child("Date").child(currentDate).getRef();
+                    distributorDateRef.child("demand").child("ddcurrentDemand").setValue(0);
+                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(0);
+                    distributorDateRef.child("total").child("ddtotalCurrentdemand").setValue(0);
+                    distributorDateRef.child("alert").setValue("false");
+                    distributorDateRef.child("history").child("ddtotalCurrentDemand").setValue(0);
+                    distributorDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("UploadDataToFirebase", "Failed to upload distributor data: " + databaseError.getMessage());
             }
         });
     }

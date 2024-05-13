@@ -32,13 +32,13 @@ public class DistributorDetailsActivity extends AppCompatActivity {
         float currentDemand = getIntent().getFloatExtra("CURRENT_DEMAND", 0);
         float targetDemand = getIntent().getFloatExtra("TARGET_DEMAND", 0);
 
-        // Set data to the views
-        TextView textViewDistributorName = findViewById(R.id.textViewDistributorName);
-        TextView textViewCurrentDemand = findViewById(R.id.textViewCurrentDemand);
-        TextView textViewTargetDemand = findViewById(R.id.textViewTargetDemand);
-
-        textViewDistributorName.setText(distributorName);
-        textViewCurrentDemand.setText("Current Demand: " + currentDemand + " MW");
-        textViewTargetDemand.setText("Target Demand: " + targetDemand + " MW");
+//        // Set data to the views
+//        TextView textViewDistributorName = findViewById(R.id.textViewDistributorName);
+//        TextView textViewCurrentDemand = findViewById(R.id.textViewCurrentDemand);
+//        TextView textViewTargetDemand = findViewById(R.id.textViewTargetDemand);
+//
+//        textViewDistributorName.setText(distributorName);
+//        textViewCurrentDemand.setText("Current Demand: " + currentDemand + " MW");
+//        textViewTargetDemand.setText("Target Demand: " + targetDemand + " MW");
     }
 }

@@ -1,8 +1,10 @@
 package com.go.sgm_android;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -236,6 +239,7 @@ public class AddPowerPlantActivity extends AppCompatActivity {
 //                    Toast.makeText(AddPowerPlantActivity.this, "Hello "+division+district+upazilla+operator+ownership+fuelType+method+output+name, Toast.LENGTH_SHORT).show();
                     progressDialog.show();
                     addPowerPlantToDatabase(division, district, upazilla, operator, ownership, fuelType, method, output, name);
+                    uploadPPDataToFirebase();
                 } else {
                     Toast.makeText(AddPowerPlantActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 }
@@ -277,6 +281,38 @@ public class AddPowerPlantActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     Toast.makeText(AddPowerPlantActivity.this, "Failed to add power plant: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    public static void uploadPPDataToFirebase() {
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
+
+        // Get the current date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Upload PowerPlant data
+        DatabaseReference powerPlantRef = databaseRef.child("PowerPlant");
+
+        powerPlantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String powerPlantKey = snapshot.getKey();
+                    DatabaseReference powerPlantDateRef = snapshot.child("Date").child(currentDate).getRef();
+                    powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue(0);
+                    powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(0);
+                    powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue(0);
+                    powerPlantDateRef.child("alert").setValue("false");
+                    powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue(0);
+                    powerPlantDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
             }
         });
     }

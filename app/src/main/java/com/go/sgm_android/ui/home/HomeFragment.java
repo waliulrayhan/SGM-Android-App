@@ -292,7 +292,7 @@ public class HomeFragment extends Fragment {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String commentText = snapshot.child("comment").getValue(String.class);
                         if (commentText != null) {
-                            comments.add(new Comment(commentText));
+                            comments.add(0, new Comment(commentText));
                         }
                     }
                     commentAdapter.setComments(comments);
