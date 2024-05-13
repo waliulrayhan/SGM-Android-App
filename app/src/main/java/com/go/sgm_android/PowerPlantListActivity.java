@@ -111,8 +111,7 @@ public class PowerPlantListActivity extends AppCompatActivity {
                         float targetCapacity = snapshot.child("Date").child(currentDate).child("capacity").child("pptargetCapacity").getValue(float.class);
                         float totalCapacity = snapshot.child("Date").child(currentDate).child("total").child("pptotalCurrentCapacity").getValue(float.class);
                         // You can also fetch other fields similarly
-//                        PowerPlant powerPlant = new PowerPlant(name, currentCapacity, targetCapacity, totalCapacity);
-                        PowerPlant powerPlant = new PowerPlant(name, currentCapacity, targetCapacity);
+                        PowerPlant powerPlant = new PowerPlant(name, currentCapacity, targetCapacity, totalCapacity);
                         powerPlants.add(powerPlant);
                     }
                 }
