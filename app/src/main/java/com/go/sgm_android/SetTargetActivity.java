@@ -39,7 +39,7 @@ public class SetTargetActivity extends AppCompatActivity {
     private AutoCompleteTextView typeAutoCompleteTextView, nameAutoCompleteTextView;
     private ArrayAdapter<String> typeAdapter, ppnameAdapter, ddnameAdapter;
     private String[] type = {"Power Plant", "Distributor"};
-    static String selectedDate;
+    static String selectedDate="";
     private ProgressDialog progressDialog;
 
     @Override
@@ -102,36 +102,46 @@ public class SetTargetActivity extends AppCompatActivity {
             }
         });
 
-        // Set a click listener for the save button
+// Set a click listener for the save button
         binding.setTargetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get the selected type and name
                 String selectedType = typeAutoCompleteTextView.getText().toString();
                 String selectedName = nameAutoCompleteTextView.getText().toString();
-                String ss = binding.targetEditText.getText().toString().trim();
-                float selectedTarget = Float.parseFloat(ss);
+                String targetText = binding.targetEditText.getText().toString().trim();
 
-                if (!selectedDate.isEmpty() && !selectedType.isEmpty() && !selectedName.isEmpty() && !ss.isEmpty()){
-                    // Show toast with selected type and name
-                    String message = "Date: "+selectedDate+" Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: "+selectedTarget;
-                    Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
-
-                    setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
-                    progressDialog.show();
-                }
-                else {
+                // Check if any field is empty
+                if (selectedDate.isEmpty() || selectedType.isEmpty() || selectedName.isEmpty() || targetText.isEmpty() || selectedDate.equals("Select Date")) {
                     Toast.makeText(SetTargetActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return; // Exit the method early
                 }
-            }
 
+                // Attempt to parse the target text as a float
+                float selectedTarget;
+                try {
+                    selectedTarget = Float.parseFloat(targetText);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(SetTargetActivity.this, "Please enter a valid target value", Toast.LENGTH_SHORT).show();
+                    return; // Exit the method early
+                }
+
+                // Show toast with selected type and name
+                String message = "Date: " + selectedDate + " Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: " + selectedTarget;
+                Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
+
+                // Call your method to set target data into Firebase (uncomment when ready)
+                // setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
+                // progressDialog.show();
+            }
         });
+
     }
 
     private void setTargetDataIntoFirebase(String selectedDate, String selectedType, String selectedName, float selectedTarget) {
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference().child("SGM");
 
-        if (selectedType.equals("Power Plant")){
+        if (selectedType.equals("Power Plant")) {
             // Upload PowerPlant data
             DatabaseReference powerPlantRef = databaseRef.child("PowerPlant");
 
@@ -169,7 +179,7 @@ public class SetTargetActivity extends AppCompatActivity {
                 }
             });
         }
-        if (selectedType.equals("Distributor")){
+        if (selectedType.equals("Distributor")) {
             // Upload Distributor Data
             DatabaseReference distributorRef = databaseRef.child("Distributor").child(selectedName);
             distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {

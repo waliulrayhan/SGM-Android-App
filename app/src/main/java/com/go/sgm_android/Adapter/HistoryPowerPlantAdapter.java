@@ -61,20 +61,20 @@ public class HistoryPowerPlantAdapter extends RecyclerView.Adapter<HistoryPowerP
         }
 
         void bind(PowerPlant powerPlant) {
-            powerPlantName.setText("Power Plant\n"+powerPlant.getPPname());
-            currentCapacity.setText("Supply: " + powerPlant.getPPcurrentCapacity() + " MW"); // Convert long to String
-            targetCapacity.setText("Target: " + powerPlant.getPPtargetCapacity() + " MW"); // Convert long to String
+            powerPlantName.setText(powerPlant.getPPname());
 
             // Compare totalCapacity and targetCapacity
             float totalValue = powerPlant.getPPcurrentCapacity();
             float targetValue = powerPlant.getPPtargetCapacity();
 
             if (totalValue < targetValue) {
-                alert.setText("Alert, failed");
-            } else if (totalValue > targetValue) {
-                alert.setText("Success Ok");
+                alert.setText("Alert: This power plant failed to meet the target.");
+                currentCapacity.setText("Supply: " + powerPlant.getPPcurrentCapacity() + " MW"); // Convert long to String
+                targetCapacity.setText("Target: " + powerPlant.getPPtargetCapacity() + " MW"); // Convert long to String
             } else {
-                alert.setText("Taget and Total Capacity is Equal");
+                alert.setText("Success: This power plant met the target.");
+                currentCapacity.setText("Supply: " + powerPlant.getPPtargetCapacity() + " MW"); // Convert long to String
+                targetCapacity.setText("Target: " + powerPlant.getPPtargetCapacity() + " MW"); // Convert long to String
             }
         }
     }

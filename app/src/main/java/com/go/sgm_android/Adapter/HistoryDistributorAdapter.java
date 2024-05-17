@@ -29,7 +29,7 @@ public class HistoryDistributorAdapter extends RecyclerView.Adapter<HistoryDistr
     @NonNull
     @Override
     public HistoryDistributorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_distributor, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history_distributor, parent, false);
         return new HistoryDistributorViewHolder(view);
     }
 
@@ -60,7 +60,7 @@ public class HistoryDistributorAdapter extends RecyclerView.Adapter<HistoryDistr
         }
 
         void bind(Distributor distributor) {
-            distributorName.setText("Distributor\n"+distributor.getDDname());
+            distributorName.setText(distributor.getDDname());
             currentDemand.setText("Supply: " + distributor.getDDcurrentDemand() + " MW"); // Convert long to String
             targetDemand.setText("Target: " + distributor.getDDtargetDemand() + " MW"); // Convert long to String
         }

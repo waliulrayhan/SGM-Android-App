@@ -52,9 +52,7 @@ import java.util.Map;
 public class HistoryFragment extends Fragment {
 
     private FragmentHistoryBinding binding;
-    private TextView text;
-    private String name="";
-    static String selectedDate="";
+    static String selectedDate = "";
     private String[] type = {"All Data", "Power Plant", "Distributor"};
     private AutoCompleteTextView typeAutoCompleteTextView;
     private ArrayAdapter<String> typeAdapter;
@@ -70,7 +68,6 @@ public class HistoryFragment extends Fragment {
         try {
             // Date Picker
             Button pickDateButton = root.findViewById(R.id.pickDate);
-            text = root.findViewById(R.id.textView7);
 
             binding.dataTextView.setVisibility(View.GONE);
             binding.card.setVisibility(View.GONE);
@@ -96,22 +93,10 @@ public class HistoryFragment extends Fragment {
             // Set a listener for the typeAutoCompleteTextView to fetch data accordingly
             typeAutoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
                 String selectedType = (String) parent.getItemAtPosition(position);
-
-                if (selectedType.isEmpty() && selectedDate.isEmpty()) {
-                    // Both name and selectedDate are empty
-                    Toast.makeText(getContext(), "Please select a type and a date", Toast.LENGTH_SHORT).show();
-                } else if (selectedType.isEmpty()) {
-                    // Name is empty
-                    Toast.makeText(getContext(), "Please select a type", Toast.LENGTH_SHORT).show();
-                } else if (selectedDate.isEmpty()) {
-                    // Selected date is empty
+                if (selectedDate.equals("Select Date") || selectedDate.isEmpty()) {
                     Toast.makeText(getContext(), "Please select a date", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Both name and selectedDate are not empty, proceed with search
-                    // Here you can implement the logic for searching based on name and selectedDate
-                    // For now, let's just show a toast message indicating search is triggered
-
-                    if (selectedType.equals("All Data")){
+                    if (selectedType.equals("All Data")) {
                         powerPlantAdapter.clear();
                         distributorAdapter.clear();
                         fetchDataFromFirebase3(selectedType, selectedDate);
@@ -120,13 +105,14 @@ public class HistoryFragment extends Fragment {
                         distributorAdapter.clear();
                         fetchDataFromFirebase1(selectedType, selectedDate);
                         fetchTotalDataFromFirebase1(selectedDate);
-                    } else if (selectedType.equals("Distributor")){
+                    } else if (selectedType.equals("Distributor")) {
                         powerPlantAdapter.clear();
                         fetchDataFromFirebase2(selectedType, selectedDate);
                         fetchTotalDataFromFirebase2(selectedDate);
                     }
                 }
             });
+
 
             //==========================================================================================
             // This is for Power Plant Recycler View
@@ -199,7 +185,7 @@ public class HistoryFragment extends Fragment {
                             // You can also fetch other fields similarly
                             PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
                             powerPlants.add(powerPlant);
-                        }else {
+                        } else {
                             binding.dataTextView.setText("No Data Found for the Selected Date");
                             binding.dataTextView.setVisibility(View.VISIBLE);
 
@@ -217,7 +203,7 @@ public class HistoryFragment extends Fragment {
                     Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -252,7 +238,7 @@ public class HistoryFragment extends Fragment {
                         // You can also fetch other fields similarly
                         Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand);
                         distributors.add(distributor);
-                    }else {
+                    } else {
                         binding.dataTextView.setText("No Data Found for the Selected Date");
                         binding.dataTextView.setVisibility(View.VISIBLE);
 
@@ -291,7 +277,7 @@ public class HistoryFragment extends Fragment {
                         // You can also fetch other fields similarly
                         PowerPlant powerPlant = new PowerPlant(name, targetCapacity, currentCapacity);
                         powerPlants.add(powerPlant);
-                    }else {
+                    } else {
                         binding.dataTextView.setText("No Data Found for the Selected Date");
                         binding.dataTextView.setVisibility(View.VISIBLE);
 
@@ -337,7 +323,7 @@ public class HistoryFragment extends Fragment {
                         // You can also fetch other fields similarly
                         Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand);
                         distributors.add(distributor);
-                    }else {
+                    } else {
                         binding.dataTextView.setText("No Data Found for the Selected Date");
                         binding.dataTextView.setVisibility(View.VISIBLE);
                     }
@@ -376,9 +362,9 @@ public class HistoryFragment extends Fragment {
                     binding.card.setVisibility(View.VISIBLE);
                     binding.card2.setVisibility(View.GONE);
 //                     Update UI with fetched values
-                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: "+String.valueOf(totaltargetCapacityValue)+" MW");
+                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: " + String.valueOf(totaltargetCapacityValue) + " MW");
 //                     Update UI with fetched values
-                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
+                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: " + String.valueOf(totalCurrentCapacityValue) + " MW");
 //                     Update UI with fetched values
 //                    binding.ddTotalCurrentDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totalCurrentDemandValue)+" MW");
 //                     Update UI with fetched values
@@ -415,9 +401,9 @@ public class HistoryFragment extends Fragment {
                     // Fetch total current capacity value
 //                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
                     // Fetch total target Demand value
-                        float totaltargetDemandValue = totalsSnapshot.child("AllddtargetDemand").getValue(float.class);
+                    float totaltargetDemandValue = totalsSnapshot.child("AllddtargetDemand").getValue(float.class);
                     // Fetch total current Demand value
-                        float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
+                    float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
                     binding.dataTextView.setVisibility(View.GONE);
                     binding.card2.setVisibility(View.VISIBLE);
@@ -427,9 +413,9 @@ public class HistoryFragment extends Fragment {
 //                     Update UI with fetched values
 //                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
 //                     Update UI with fetched values
-                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totaltargetDemandValue)+" MW");
+                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: " + String.valueOf(totaltargetDemandValue) + " MW");
 //                     Update UI with fetched values
-                    binding.AllddcurrentDemand.setText("Total Demand Supply: "+String.valueOf(totalCurrentDemandValue)+" MW");
+                    binding.AllddcurrentDemand.setText("Total Demand Supply: " + String.valueOf(totalCurrentDemandValue) + " MW");
                 } else {
                     // Handle case when data doesn't exist
                     // You can display a message or take appropriate action
@@ -470,13 +456,13 @@ public class HistoryFragment extends Fragment {
                     binding.card2.setVisibility(View.VISIBLE);
                     binding.card.setVisibility(View.VISIBLE);
 //                     Update UI with fetched values
-                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: "+String.valueOf(totaltargetCapacityValue)+" MW");
+                    binding.AllpptargetCapacity.setText("Total Target Capacity of Power Plants: " + String.valueOf(totaltargetCapacityValue) + " MW");
 //                     Update UI with fetched values
-                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: "+String.valueOf(totalCurrentCapacityValue)+" MW");
+                    binding.AllppcurrentCapacity.setText("Total Capacity Supply: " + String.valueOf(totalCurrentCapacityValue) + " MW");
 //                     Update UI with fetched values
-                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: "+String.valueOf(totaltargetDemandValue)+" MW");
+                    binding.AllddtargetDemand.setText("Total Target Demand of Distributors: " + String.valueOf(totaltargetDemandValue) + " MW");
 //                     Update UI with fetched values
-                    binding.AllddcurrentDemand.setText("Total Demand Supply: "+String.valueOf(totalCurrentDemandValue)+" MW");
+                    binding.AllddcurrentDemand.setText("Total Demand Supply: " + String.valueOf(totalCurrentDemandValue) + " MW");
                 } else {
                     // Handle case when data doesn't exist
                     // You can display a message or take appropriate action
