@@ -206,6 +206,7 @@ public class HomeFragment extends Fragment {
                             if (!inputData.isEmpty()){
                                 Toast.makeText(getContext(), "Hello "+inputData, Toast.LENGTH_SHORT).show();
                                 uploadCentralCommandToFirebase(inputData);
+                                showLoadingDialog();
                             }
 
                             // Dismiss the dialog
@@ -289,10 +290,12 @@ public class HomeFragment extends Fragment {
                             // Comment uploaded successfully
                             Log.d("UploadCentralCommand", "Comment uploaded successfully");
                             // You can add any additional actions you want to perform on success
+                            hideLoadingDialog();
                         } else {
                             // Failed to upload comment
                             Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
                             // Handle the error, if needed
+                            hideLoadingDialog();
                         }
                     }
                 });
@@ -311,7 +314,7 @@ public class HomeFragment extends Fragment {
             DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
                     .child("SGM").child("Date").child(currentDate).child("comments");
 
-            commentRef.addValueEventListener(new ValueEventListener() {
+            commentRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<Comment> comments = new ArrayList<>();
@@ -364,53 +367,38 @@ public class HomeFragment extends Fragment {
                     // Fetch total current demand value
                     float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
+                    float frequency = (totalCurrentCapacityValue/totalCurrentDemandValue)*50;
+
                     if (totalCurrentCapacityValue < totalCurrentDemandValue){
                         // Update UI with fetched values
                         binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
 
                         // Update UI with fetched values
                         binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+
+                        binding.frequency.setText("Frequency\n"+String.valueOf(frequency)+" Hz");
                     } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
                         // Update UI with fetched values
                         binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentDemandValue)+" MW");
 
                         // Update UI with fetched values
                         binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+
+                        binding.frequency.setText("Frequency\n50 Hz");
                     }else {
                         // Update UI with fetched values
                         binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
 
                         // Update UI with fetched values
                         binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+
+                        binding.frequency.setText("Frequency\n50 Hz");
                     }
 
                     // Hide the Loading
                     hideLoadingDialog();
 
-//                    // Compare total current capacity with total current demand
-//                    if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue>10) {
-//                        // If capacity is greater, set safeButton to green background and warning text
-//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
-//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
-//                        binding.safeButton.setText("All Clear: Supply Meets Target Successfully");
-//                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue<10) {
-//                        // If capacity is greater, set safeButton to green background and warning text
-//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.warning_24dp_fill, 0, 0, 0);
-//                        binding.safeButton.setText("Caution: Supply Nearing Target Fulfillment");
-//                        binding.safeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
 
-
-                    if (totalCurrentCapacityValue < totalCurrentDemandValue){
-                        // If capacity is not greater, set safeButton to red background and safe text
-//                        binding.safeButton.setVisibility(View.VISIBLE);
-//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
-//                        binding.safeButton.setText("Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target");
-                        binding.marquee.setSelected(true);
-                    }else {
-//                        binding.safeButton.setVisibility(View.GONE);
-                    }
                 } else {
                     // Handle case when data doesn't exist
                     // You can display a message or take appropriate action
@@ -451,10 +439,15 @@ public class HomeFragment extends Fragment {
 
                 String alertMessage = alertMessageBuilder.toString();
                 if (hasAlerts) {
+                    binding.marquee.setSelected(true);
                     binding.marquee.setText(alertMessage);
                     binding.marquee.setVisibility(View.VISIBLE);
                 } else {
-                    binding.marquee.setVisibility(View.GONE);
+                    binding.marquee.setSelected(true);
+                    binding.marquee.setText("Success: All power plant meet the target.               Success: All power plant meet the target.");
+                    binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
+                    binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+                    binding.marquee.setVisibility(View.VISIBLE);
                 }
             }
 

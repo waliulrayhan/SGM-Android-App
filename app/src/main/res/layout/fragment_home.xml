@@ -174,7 +174,7 @@
             app:layout_constraintTop_toBottomOf="@+id/dd_total_current_demand" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/loginButton3"
+            android:id="@+id/frequency"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_marginStart="16dp"
@@ -203,7 +203,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginButton3" />
+            app:layout_constraintTop_toBottomOf="@+id/frequency" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_central_command"
