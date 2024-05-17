@@ -33,7 +33,7 @@
         android:layout_marginEnd="50dp"
         android:height="55dp"
         android:drawableLeft="@drawable/smart_grid"
-        android:text="Add Distributor"
+        android:text="Add Distributor Area"
         android:textSize="18sp"
         app:backgroundTint="#6AD4DD"
         app:cornerRadius="5dp"

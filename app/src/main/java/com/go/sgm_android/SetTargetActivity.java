@@ -95,14 +95,15 @@ public class SetTargetActivity extends AppCompatActivity {
                 // Set the adapter for distributor names
                 nameAutoCompleteTextView.setAdapter(ddnameAdapter);
                 // Show hardcoded distributor names
-                String[] distributorNames = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
+//                String[] distributorNames = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
+                String[] distributorNames = {"Bangladesh Power Development Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited"};
                 ddnameAdapter.clear();
                 ddnameAdapter.addAll(distributorNames);
                 ddnameAdapter.notifyDataSetChanged();
             }
         });
 
-// Set a click listener for the save button
+        // Set a click listener for the save button
         binding.setTargetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,8 +132,8 @@ public class SetTargetActivity extends AppCompatActivity {
                 Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
 
                 // Call your method to set target data into Firebase (uncomment when ready)
-                // setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
-                // progressDialog.show();
+                 setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
+                 progressDialog.show();
             }
         });
 

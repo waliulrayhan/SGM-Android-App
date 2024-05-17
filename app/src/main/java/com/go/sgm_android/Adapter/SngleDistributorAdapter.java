@@ -20,21 +20,22 @@ public class SngleDistributorAdapter extends RecyclerView.Adapter<SngleDistribut
         this.distributors = distributors;
     }
 
-    public void clear() {
-        distributors.clear();
-        notifyDataSetChanged(); // Notify adapter that the data has changed
+    public void setDistributors(List<Distributor> distributors) {
+        this.distributors = distributors;
+        notifyDataSetChanged(); // Notify RecyclerView that data has changed
     }
 
     @NonNull
     @Override
     public SngleDistributorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_single_distributor, parent, false);
-        return new SngleDistributorViewHolder(view);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_single_distributor, parent, false);
+        return new SngleDistributorViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SngleDistributorViewHolder holder, int position) {
-        holder.bind(distributors.get(position));
+        Distributor distributor = distributors.get(position);
+        holder.bind(distributor);
     }
 
     @Override
@@ -42,10 +43,6 @@ public class SngleDistributorAdapter extends RecyclerView.Adapter<SngleDistribut
         return distributors.size();
     }
 
-    public void setDistributors(List<Distributor> distributors) {
-        this.distributors = distributors;
-        notifyDataSetChanged(); // Notify RecyclerView that the data has changed
-    }
     static class SngleDistributorViewHolder extends RecyclerView.ViewHolder {
         TextView Name;
         TextView Zone;
@@ -65,3 +62,4 @@ public class SngleDistributorAdapter extends RecyclerView.Adapter<SngleDistribut
         }
     }
 }
+

@@ -87,11 +87,11 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
             float targetCapacityValue = powerPlant.getPPtargetCapacity();
 
             if (totalCapacityValue < targetCapacityValue) {
-                alert.setText("Alert, failed");
+                alert.setText("Alert: This power plant failed to meet the target.");
             } else if (totalCapacityValue > targetCapacityValue) {
-                alert.setText("Success Ok");
+                alert.setText("Alert: No alerts as of now.");
             } else {
-                alert.setText("Taget and Total Capacity is Equal");
+                alert.setText("Alert: No alerts as of now.");
             }
         }
 

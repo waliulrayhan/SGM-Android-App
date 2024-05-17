@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.search_menu) {
-            // Handle click on Messenger menu item
-            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-            startActivity(intent);
-            return true;
-        }
+//        if (id == R.id.search_menu) {
+//            // Handle click on Messenger menu item
+//            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+//            startActivity(intent);
+//            return true;
+//        }
         if (id == R.id.profile_menu) {
             // Handle click on Messenger menu item
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);

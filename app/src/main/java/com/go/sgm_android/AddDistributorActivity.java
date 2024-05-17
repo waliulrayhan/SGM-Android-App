@@ -47,7 +47,9 @@ public class AddDistributorActivity extends AppCompatActivity {
 
 
     // Define your distributor, zone, and circle arrays here
-    private String[] distributor = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
+//    private String[] distributor = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
+    private String[] distributor = {"Bangladesh Power Development Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited"};
+
     private String[][] zone = {
             {"Chattogram (South Zone)", "Mymensingh (Central Zone)", "Cumilla Zone", "Sylhet Zone"},
             {"No Circle"},

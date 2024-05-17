@@ -74,14 +74,6 @@ public class DistributorDetailsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Distributor> distributors = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    // Distributor keys mapping
-//                    Map<String, String> distributorKeysMap = new HashMap<>();
-//                    distributorKeysMap.put("BPDB", "Bangladesh Power Development Board");
-//                    distributorKeysMap.put("BREB", "Bangladesh Rural Electrification Board");
-//                    distributorKeysMap.put("DESCO", "Dhaka Electric Supply Company Limited");
-//                    distributorKeysMap.put("DPDC", "Dhaka Power Distribution Company Limited");
-//                    distributorKeysMap.put("NESCO", "Northern Electricity Supply Company PLC");
-//                    distributorKeysMap.put("WZPDCL", "West Zone Power Distribution Company Limited");
 
                     if (snapshot.exists()){
                         String name = snapshot.child("ddname").getValue(String.class);
@@ -89,7 +81,7 @@ public class DistributorDetailsActivity extends AppCompatActivity {
                         String circle = snapshot.child("ddcircle").getValue(String.class);
 
                         // You can also fetch other fields similarly
-                        Distributor distributor = new Distributor(name, zone, circle, distributorName);
+                        Distributor distributor = new Distributor(name, zone, circle);
                         distributors.add(distributor);
                     }
                 }

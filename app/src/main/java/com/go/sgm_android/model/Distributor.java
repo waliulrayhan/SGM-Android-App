@@ -29,6 +29,12 @@ public class Distributor {
         this.DDtargetDemand = DDtargetDemand;
     }
 
+    public Distributor(String DDname, String DDzone, String DDcircle) {
+        this.DDname = DDname;
+        this.DDzone = DDzone;
+        this.DDcircle = DDcircle;
+    }
+
     public String getDDdistributor() {
         return DDdistributor;
     }

@@ -441,6 +441,8 @@ public class HomeFragment extends Fragment {
                 if (hasAlerts) {
                     binding.marquee.setSelected(true);
                     binding.marquee.setText(alertMessage);
+                    binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
+                    binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
                     binding.marquee.setVisibility(View.VISIBLE);
                 } else {
                     binding.marquee.setSelected(true);

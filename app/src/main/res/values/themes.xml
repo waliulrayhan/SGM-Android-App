@@ -33,4 +33,9 @@
         <item name="colorOnSurfaceVariant">@color/black</item>
     </style>
 
+    <!-- Splash screen theme -->
+    <style name="Theme.SGMAndroid.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/glitter_lake</item>
+    </style>
+
 </resources>
