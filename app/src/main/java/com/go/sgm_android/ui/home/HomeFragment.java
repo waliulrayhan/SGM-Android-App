@@ -36,6 +36,7 @@ import com.go.sgm_android.PowerPlantListActivity;
 import com.go.sgm_android.R;
 import com.go.sgm_android.databinding.FragmentHomeBinding;
 import com.go.sgm_android.model.Comment;
+import com.go.sgm_android.model.PowerPlant;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -61,6 +62,7 @@ public class HomeFragment extends Fragment {
     private Runnable updateTimeRunnable;
     private CommentAdapter commentAdapter;
     private AlertDialog loadingDialog; // Reference to the loading dialog
+    String text="";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -420,5 +422,47 @@ public class HomeFragment extends Fragment {
                 // Handle onCancelled
             }
         });
+
+        DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+
+        powerPlantRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                StringBuilder alertMessageBuilder = new StringBuilder();
+                boolean isFirstAlert = true;
+                boolean hasAlerts = false;
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String ppName = snapshot.child("ppname").getValue(String.class);
+                    DataSnapshot dateSnapshot = snapshot.child("Date").child(currentDate);
+                    if (ppName != null && dateSnapshot.exists() && dateSnapshot.child("alert").exists()) {
+                        Boolean alertValue = dateSnapshot.child("alert").getValue(Boolean.class);
+                        if (alertValue != null && alertValue) {
+                            hasAlerts = true;
+                            if (!isFirstAlert) {
+                                alertMessageBuilder.append(", ");
+                            } else {
+                                isFirstAlert = false;
+                            }
+                            alertMessageBuilder.append("Alert: ").append(ppName).append(" Failed to Meet the Target");
+                        }
+                    }
+                }
+
+                String alertMessage = alertMessageBuilder.toString();
+                if (hasAlerts) {
+                    binding.marquee.setText(alertMessage);
+                    binding.marquee.setVisibility(View.VISIBLE);
+                } else {
+                    binding.marquee.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
+            }
+        });
+
     }
 }

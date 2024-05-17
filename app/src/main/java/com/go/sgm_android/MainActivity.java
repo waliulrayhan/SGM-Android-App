@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             setTitle("Real Time Grid Info.");
 
             // Schedule the data upload task using WorkManager
-            scheduleDailyDataUploadTask();
+//            scheduleDailyDataUploadTask();
 
             binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
                 Fragment selectedFragment = null;
