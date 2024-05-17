@@ -18,9 +18,18 @@
         android:theme="@style/Theme.SGMAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".GraphActivity"
+            android:screenOrientation="landscape"
+            android:exported="false"
+            android:parentActivityName=".SettingsActivity"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".DistributorDetailsActivity"
             android:exported="false"
-            android:parentActivityName=".DistributorListActivity"/>
+            android:parentActivityName=".DistributorListActivity" />
         <activity
             android:name=".PowerPlantDetailsActivity"
             android:exported="false"
@@ -40,11 +49,6 @@
         <activity
             android:name=".TestActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".SearchActivity"
