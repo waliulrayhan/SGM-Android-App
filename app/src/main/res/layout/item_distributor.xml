@@ -24,15 +24,14 @@
 
             <TextView
                 android:id="@+id/DD_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 android:text="Ghorashal Power Plant"
+                android:textColor="#2196F3"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,21 +39,25 @@
                 android:id="@+id/DD_total_current_demand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/DD_name"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/DD_name" />
 
             <TextView
                 android:id="@+id/DD_target_demand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
                 android:text="TextView"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/DD_name"
-                app:layout_constraintTop_toBottomOf="@+id/DD_name" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dd_total" />
 
             <TextView
                 android:id="@+id/dd_total"
@@ -62,9 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
                 android:text="Total Current Demand: 0.0 MW"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/DD_total_current_demand" />
 

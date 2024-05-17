@@ -45,15 +45,6 @@ public class MainActivity extends AppCompatActivity {
             // Schedule the data upload task using WorkManager
             scheduleDailyDataUploadTask();
 
-            // Continuous Data Change
-//            continuousDataUpdateIntoFirebase();
-//            continuousDataUpdateIntoFirebase2();
-
-            // Start the foreground service
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(new Intent(this, ContinuousUpdateService.class));
-//        }
-
             binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
                 Fragment selectedFragment = null;
                 if (item.getItemId() == R.id.item_1) {
@@ -75,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
             // Example: Displaying a toast message to the user
             Toast.makeText(this, "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
     }
 
     private void showToast(String message) {

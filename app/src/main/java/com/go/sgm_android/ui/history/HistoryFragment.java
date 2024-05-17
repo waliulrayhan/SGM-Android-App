@@ -157,6 +157,26 @@ public class HistoryFragment extends Fragment {
 
         return root;
     }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        // Attach Firebase listeners here
+//        fetchDataFromFirebase1(name, selectedDate);
+//        fetchDataFromFirebase2(name, selectedDate);
+//        fetchDataFromFirebase3(name, selectedDate);
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        // Detach Firebase listeners here
+//        DatabaseReference powerPlantRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("PowerPlant");
+//        powerPlantRef.removeEventListener(powerPlantListener);
+//
+//        DatabaseReference distributorRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Distributor");
+//        distributorRef.removeEventListener(distributorListener);
+//    }
 
     private void fetchDataFromFirebase1(String name, String selectedDate) {
 

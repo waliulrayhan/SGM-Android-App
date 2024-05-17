@@ -24,15 +24,14 @@
 
             <TextView
                 android:id="@+id/PP_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
                 android:text="Ghorashal Power Plant"
+                android:textColor="#4CAF50"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,21 +39,23 @@
                 android:id="@+id/PP_current_capacity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/PP_name"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/PP_name" />
 
             <TextView
                 android:id="@+id/PP_Max_Output"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:text="TextView"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/PP_current_capacity"
-                app:layout_constraintEnd_toEndOf="@+id/PP_name"
-                app:layout_constraintTop_toTopOf="@+id/PP_current_capacity" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/PP_total_current_capacity" />
 
             <TextView
                 android:id="@+id/PP_total_current_capacity"
@@ -76,7 +77,7 @@
                 android:text="TextView"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/PP_total_current_capacity" />
+                app:layout_constraintTop_toBottomOf="@+id/PP_Max_Output" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

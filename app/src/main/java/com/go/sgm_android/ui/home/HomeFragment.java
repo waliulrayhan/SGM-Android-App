@@ -1,5 +1,6 @@
 package com.go.sgm_android.ui.home;
 
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -12,6 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -56,11 +60,15 @@ public class HomeFragment extends Fragment {
     private Handler handler;
     private Runnable updateTimeRunnable;
     private CommentAdapter commentAdapter;
+    private AlertDialog loadingDialog; // Reference to the loading dialog
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // Show loading dialog
+        showLoadingDialog();
 
         try {
             //==========================================================================================
@@ -224,6 +232,22 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    // Method to show the loading dialog
+    private void showLoadingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(LayoutInflater.from(requireContext()).inflate(R.layout.dialog_loading, null));
+        builder.setCancelable(false); // Prevent dismissing dialog by touching outside
+        loadingDialog = builder.create();
+        loadingDialog.show();
+    }
+
+    // Method to hide the loading dialog
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
     private void uploadCentralCommandToFirebase(String inputData) {
 
         try {
@@ -296,6 +320,9 @@ public class HomeFragment extends Fragment {
                         }
                     }
                     commentAdapter.setComments(comments);
+
+                    // Hide the Loading
+                    hideLoadingDialog();
                 }
 
                 @Override
@@ -335,29 +362,52 @@ public class HomeFragment extends Fragment {
                     // Fetch total current demand value
                     float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
-                    // Update UI with fetched values
-                    binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
+                    if (totalCurrentCapacityValue < totalCurrentDemandValue){
+                        // Update UI with fetched values
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
 
-                    // Update UI with fetched values
-                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                        // Update UI with fetched values
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
+                        // Update UI with fetched values
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentDemandValue)+" MW");
 
-                    // Compare total current capacity with total current demand
-                    if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue>10) {
-                        // If capacity is greater, set safeButton to green background and warning text
-                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
-                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
-                        binding.safeButton.setText("All Clear: Supply Meets Target Successfully");
-                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue<10) {
-                        // If capacity is greater, set safeButton to green background and warning text
-                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
-                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.warning_24dp_fill, 0, 0, 0);
-                        binding.safeButton.setText("Caution: Supply Nearing Target Fulfillment");
-                        binding.safeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
-                    } else {
+                        // Update UI with fetched values
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                    }else {
+                        // Update UI with fetched values
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
+
+                        // Update UI with fetched values
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                    }
+
+                    // Hide the Loading
+                    hideLoadingDialog();
+
+//                    // Compare total current capacity with total current demand
+//                    if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue>10) {
+//                        // If capacity is greater, set safeButton to green background and warning text
+//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
+//                        binding.safeButton.setText("All Clear: Supply Meets Target Successfully");
+//                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue && totalCurrentCapacityValue-totalCurrentDemandValue<10) {
+//                        // If capacity is greater, set safeButton to green background and warning text
+//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.yellow));
+//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.warning_24dp_fill, 0, 0, 0);
+//                        binding.safeButton.setText("Caution: Supply Nearing Target Fulfillment");
+//                        binding.safeButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+
+
+                    if (totalCurrentCapacityValue < totalCurrentDemandValue){
                         // If capacity is not greater, set safeButton to red background and safe text
-                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
-                        binding.safeButton.setText("Alert: Supply Failed to Meet the Target");
+//                        binding.safeButton.setVisibility(View.VISIBLE);
+//                        binding.safeButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+//                        binding.safeButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
+//                        binding.safeButton.setText("Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target Alert: Supply Failed to Meet the Target");
+                        binding.marquee.setSelected(true);
+                    }else {
+//                        binding.safeButton.setVisibility(View.GONE);
                     }
                 } else {
                     // Handle case when data doesn't exist
@@ -371,5 +421,4 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
 }
