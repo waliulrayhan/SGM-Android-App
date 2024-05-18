@@ -250,13 +250,10 @@ public class SetTargetActivity extends AppCompatActivity {
 
         private Button pickDateButton;
         private Calendar minDate;
-        private Calendar maxDate;
 
         public DatePickerFragment(Button pickDateButton) {
             this.pickDateButton = pickDateButton;
-            minDate = Calendar.getInstance();
-            maxDate = Calendar.getInstance();
-            maxDate.add(Calendar.DAY_OF_MONTH, 6); // Set max date to current date + 7 days
+            minDate = Calendar.getInstance(); // Set min date to current date
         }
 
         @Override
@@ -269,28 +266,17 @@ public class SetTargetActivity extends AppCompatActivity {
 
             // Create a new instance of DatePickerDialog and return it.
             DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
-            dialog.getDatePicker().setMinDate(minDate.getTimeInMillis()); // Set minimum date
-            dialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis()); // Set maximum date
+            dialog.getDatePicker().setMinDate(minDate.getTimeInMillis()); // Set minimum date to current date
             return dialog;
         }
 
         // Callback method when the user sets the date
+        @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Display the selected date in the button
-            selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
+            String selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
             pickDateButton.setText(selectedDate);
         }
-    }
-
-    private static String formatKey(String key) {
-        // Modify the key to display as desired
-        // For example, replace underscores with spaces and capitalize each word
-        String[] words = key.split("_");
-        StringBuilder formattedKey = new StringBuilder();
-        for (String word : words) {
-            formattedKey.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
-        }
-        return formattedKey.toString().trim();
     }
 }
 
