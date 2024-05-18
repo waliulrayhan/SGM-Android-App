@@ -78,9 +78,9 @@ public class PowerPlantAdapter extends RecyclerView.Adapter<PowerPlantAdapter.Po
 
         void bind(PowerPlant powerPlant) {
             powerPlantName.setText(powerPlant.getPPname());
-            currentCapacity.setText("Current Capacity: " + powerPlant.getPPcurrentCapacity() + " MW");
+            currentCapacity.setText("Current Capacity: " + powerPlant.getPPcurrentCapacity() + " MW per 5 sec.");
             targetCapacity.setText("Target Capacity: " + powerPlant.getPPtargetCapacity() + " MW");
-            totalCapacity.setText("Total Current Capacity: " + powerPlant.getPPtotalCurrentCapacity() + " MW");
+            totalCapacity.setText("Total Current Capacity: " + powerPlant.getPPtotalCurrentCapacity() + " MW till now.");
 
             // Compare totalCapacity and targetCapacity
             float totalCapacityValue = powerPlant.getPPtotalCurrentCapacity();

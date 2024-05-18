@@ -7,6 +7,7 @@ public class Distributor {
     private String DDname;
     private float DDcurrentDemand;
     private float DDtargetDemand;
+    private float DDtotalCurrentDemand;
 
     public Distributor(String DDname, String DDzone, String DDcircle,String DDdistributor) {
         this.DDname = DDname;
@@ -28,11 +29,25 @@ public class Distributor {
         this.DDcurrentDemand = DDcurrentDemand;
         this.DDtargetDemand = DDtargetDemand;
     }
+    public Distributor(String DDname, float DDcurrentDemand, float DDtargetDemand, float DDtotalCurrentDemand) {
+        this.DDname = DDname;
+        this.DDcurrentDemand = DDcurrentDemand;
+        this.DDtargetDemand = DDtargetDemand;
+        this.DDtotalCurrentDemand = DDtotalCurrentDemand;
+    }
 
     public Distributor(String DDname, String DDzone, String DDcircle) {
         this.DDname = DDname;
         this.DDzone = DDzone;
         this.DDcircle = DDcircle;
+    }
+
+    public float getDDtotalCurrentDemand() {
+        return DDtotalCurrentDemand;
+    }
+
+    public void setDDtotalCurrentDemand(float DDtotalCurrentDemand) {
+        this.DDtotalCurrentDemand = DDtotalCurrentDemand;
     }
 
     public String getDDdistributor() {

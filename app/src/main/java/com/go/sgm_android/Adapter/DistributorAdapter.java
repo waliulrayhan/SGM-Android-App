@@ -48,12 +48,14 @@ public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.
     static class DistributorViewHolder extends RecyclerView.ViewHolder {
         TextView distributorName;
         TextView currentDemand;
+        TextView totalDemand;
         TextView targetDemand;
 
         public DistributorViewHolder(@NonNull View itemView) {
             super(itemView);
             distributorName = itemView.findViewById(R.id.DD_name);
             currentDemand = itemView.findViewById(R.id.DD_total_current_demand);
+            totalDemand = itemView.findViewById(R.id.dd_total);
             targetDemand = itemView.findViewById(R.id.DD_target_demand);
 
             // Set click listener
@@ -74,7 +76,8 @@ public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.
 
         void bind(Distributor distributor) {
             distributorName.setText(distributor.getDDname());
-            currentDemand.setText("Current Demand: " + distributor.getDDcurrentDemand() + " MW");
+            currentDemand.setText("Current Demand: " + distributor.getDDcurrentDemand() + " MW per 5 sec.");
+            totalDemand.setText("Total Current Demand: " + distributor.getDDtotalCurrentDemand() + " MW till now.");
             targetDemand.setText("Target Demand: " + distributor.getDDtargetDemand() + " MW");
         }
     }

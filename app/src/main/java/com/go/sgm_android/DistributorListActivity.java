@@ -123,8 +123,9 @@ public class DistributorListActivity extends AppCompatActivity {
                     if (snapshot.child("Date").child(currentDate).exists()) {
                         float currentDemand = snapshot.child("Date").child(currentDate).child("demand").child("ddcurrentDemand").getValue(float.class);
                         float targetDemand = snapshot.child("Date").child(currentDate).child("demand").child("ddtargetdemand").getValue(float.class);
+                        float totalDemand = snapshot.child("Date").child(currentDate).child("total").child("ddtotalCurrentdemand").getValue(float.class);
                         // You can also fetch other fields similarly
-                        Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand);
+                        Distributor distributor = new Distributor(distributorKey, currentDemand, targetDemand, totalDemand);
                         distributors.add(distributor);
                     }
                 }
