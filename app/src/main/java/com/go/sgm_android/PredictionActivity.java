@@ -55,6 +55,8 @@ public class PredictionActivity extends AppCompatActivity {
         // Set the title of the activity
         setTitle("AI Prediction");
 
+        binding.marquee.setSelected(true);
+
         binding.pickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

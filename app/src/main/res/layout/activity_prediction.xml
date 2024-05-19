@@ -7,25 +7,43 @@
     android:layout_height="match_parent"
     tools:context=".PredictionActivity">
 
+    <TextView
+        android:id="@+id/marquee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Attention! This machine learning prediction data may be inaccurate. Use it at your own risk."
+        android:textSize="20sp"
+        android:singleLine="true"
+        android:padding="10dp"
+        android:ellipsize="marquee"
+        android:background="@color/yellow"
+        android:textColor="@color/black"
+        android:drawableLeft="@drawable/warning_24dp_fill"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/pickDate"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
+        android:shadowColor="@color/black"
         android:text="Select Date"
         android:textColor="@color/black"
         android:textColorLink="#000000"
-        android:shadowColor="@color/black"
-        app:cornerRadius="5dp"
         android:textSize="16sp"
+        app:cornerRadius="5dp"
         app:icon="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/marquee" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dropdown_menu_name"
