@@ -18,23 +18,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SGMAndroid"
         tools:targetApi="31">
-
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.SGMAndroid.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SGMAndroid.NoActionBar" />
-
+        <activity
+            android:name=".PredictionActivity"
+            android:parentActivityName=".SettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".GraphActivity"
             android:exported="false"

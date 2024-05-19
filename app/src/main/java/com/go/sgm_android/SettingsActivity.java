@@ -36,5 +36,14 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        binding.textView17.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, PredictionActivity.class);
+                // Start MainActivity
+                startActivity(intent);
+            }
+        });
     }
 }

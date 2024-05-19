@@ -432,7 +432,7 @@ public class HomeFragment extends Fragment {
                             } else {
                                 isFirstAlert = false;
                             }
-                            alertMessageBuilder.append("Alert: ").append(ppName).append(" Failed to Meet the Target");
+                            alertMessageBuilder.append("Alert: ").append(ppName).append(" may have failed to meet the target");
                         }
                     }
                 }
