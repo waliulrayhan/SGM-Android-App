@@ -2,6 +2,7 @@ package com.go.sgm_android;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -103,72 +105,78 @@ public class AddDistributorActivity extends AppCompatActivity {
         // Set the title of the activity
         setTitle("Add Distributor");
 
-        // Initialize Firebase Database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        // Check for internet connection immediately
+        if (NetworkUtil.isConnected(this)) {
+            // If connected, proceed to main activity after the splash screen duration
+            // Initialize Firebase Database
+            mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Adding Power Plant...");
-        progressDialog.setCancelable(false);
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Adding Power Plant...");
+            progressDialog.setCancelable(false);
 
-        // Initialize AutoCompleteTextViews
-        distributorAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDistributor);
-        zoneAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewZone);
-        circleAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewCircle);
+            // Initialize AutoCompleteTextViews
+            distributorAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDistributor);
+            zoneAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewZone);
+            circleAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewCircle);
 
-        // Initialize Adapters
-        distributorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, distributor);
-        distributorAutoCompleteTextView.setAdapter(distributorAdapter);
+            // Initialize Adapters
+            distributorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, distributor);
+            distributorAutoCompleteTextView.setAdapter(distributorAdapter);
 
-        zoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        zoneAutoCompleteTextView.setAdapter(zoneAdapter);
+            zoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            zoneAutoCompleteTextView.setAdapter(zoneAdapter);
 
-        circleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        circleAutoCompleteTextView.setAdapter(circleAdapter);
+            circleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            circleAutoCompleteTextView.setAdapter(circleAdapter);
 
-        // Set listeners for AutoCompleteTextViews
-        distributorAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                updateZoneAutoCompleteTextView(position);
-                // Clear the text of the district AutoCompleteTextView when division changes
-                zoneAutoCompleteTextView.setText("");
-                // Clear the text of the upazilla AutoCompleteTextView when division changes
-                circleAutoCompleteTextView.setText("");
-                // Clear the upazilla adapter when the division changes
-                circleAdapter.clear();
-                circleAdapter.notifyDataSetChanged();
-            }
-        });
-
-        zoneAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                int distributorPosition = distributorAdapter.getPosition(distributorAutoCompleteTextView.getText().toString());
-                updateCircleAutoCompleteTextView(distributorPosition, position);
-                // Clear the text of the upazilla AutoCompleteTextView when district changes
-                circleAutoCompleteTextView.setText("");
-            }
-        });
-
-        // Handle button click
-        binding.addDistributorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String distributor = distributorAutoCompleteTextView.getText().toString().trim();
-                String zone = zoneAutoCompleteTextView.getText().toString().trim();
-                String circle = circleAutoCompleteTextView.getText().toString().trim();
-                String name = binding.addDistributorEditText.getText().toString().trim();
-
-                if (!distributor.isEmpty() && !zone.isEmpty() && !circle.isEmpty() && !name.isEmpty()) {
-                    Toast.makeText(AddDistributorActivity.this, "Hello "+distributor+zone+circle+name, Toast.LENGTH_LONG).show();
-                    progressDialog.show();
-                    addDistributorToDatabase(distributor, zone, circle, name);
-//                    uploadDDDataToFirebase();
-                } else {
-                    Toast.makeText(AddDistributorActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            // Set listeners for AutoCompleteTextViews
+            distributorAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    updateZoneAutoCompleteTextView(position);
+                    // Clear the text of the district AutoCompleteTextView when division changes
+                    zoneAutoCompleteTextView.setText("");
+                    // Clear the text of the upazilla AutoCompleteTextView when division changes
+                    circleAutoCompleteTextView.setText("");
+                    // Clear the upazilla adapter when the division changes
+                    circleAdapter.clear();
+                    circleAdapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+
+            zoneAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    int distributorPosition = distributorAdapter.getPosition(distributorAutoCompleteTextView.getText().toString());
+                    updateCircleAutoCompleteTextView(distributorPosition, position);
+                    // Clear the text of the upazilla AutoCompleteTextView when district changes
+                    circleAutoCompleteTextView.setText("");
+                }
+            });
+
+            // Handle button click
+            binding.addDistributorButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String distributor = distributorAutoCompleteTextView.getText().toString().trim();
+                    String zone = zoneAutoCompleteTextView.getText().toString().trim();
+                    String circle = circleAutoCompleteTextView.getText().toString().trim();
+                    String name = binding.addDistributorEditText.getText().toString().trim();
+
+                    if (!distributor.isEmpty() && !zone.isEmpty() && !circle.isEmpty() && !name.isEmpty()) {
+                        Toast.makeText(AddDistributorActivity.this, "Hello "+distributor+zone+circle+name, Toast.LENGTH_LONG).show();
+                        progressDialog.show();
+                        addDistributorToDatabase(distributor, zone, circle, name);
+//                    uploadDDDataToFirebase();
+                    } else {
+                        Toast.makeText(AddDistributorActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });        } else {
+            // If not connected, show the no internet connection dialog
+            showNoInternetDialog();
+        }
     }
 
     private void addDistributorToDatabase(String distributor, String zone, String circle, String name) {
@@ -251,5 +259,25 @@ public class AddDistributorActivity extends AppCompatActivity {
         circleAdapter.clear();
         circleAdapter.addAll(selectedCircles);
         circleAdapter.notifyDataSetChanged();
+    }
+
+    private void showNoInternetDialog() {
+        new AlertDialog.Builder(AddDistributorActivity.this)
+                .setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recreate(); // Restart the activity to check connection again
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish(); // Close the app
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 }

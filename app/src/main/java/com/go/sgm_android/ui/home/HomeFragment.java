@@ -2,6 +2,7 @@ package com.go.sgm_android.ui.home;
 
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -32,8 +33,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.go.sgm_android.Adapter.CommentAdapter;
 import com.go.sgm_android.DistributorListActivity;
+import com.go.sgm_android.NetworkUtil;
 import com.go.sgm_android.PowerPlantListActivity;
 import com.go.sgm_android.R;
+import com.go.sgm_android.SplashActivity;
 import com.go.sgm_android.databinding.FragmentHomeBinding;
 import com.go.sgm_android.model.Comment;
 import com.go.sgm_android.model.PowerPlant;
@@ -62,174 +65,181 @@ public class HomeFragment extends Fragment {
     private Runnable updateTimeRunnable;
     private CommentAdapter commentAdapter;
     private AlertDialog loadingDialog; // Reference to the loading dialog
-    String text="";
+    String text = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Show loading dialog
-        showLoadingDialog();
+        // Check for internet connection immediately
+        if (NetworkUtil.isConnected(getContext())) {
+            // If connected, proceed to main activity after the splash screen duration
+            // Show loading dialog
+            showLoadingDialog();
 
-        try {
-            //==========================================================================================
-            // RecyclerView for displaying comments
-            RecyclerView recyclerView = binding.RVCentralCommand;
-            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            commentAdapter = new CommentAdapter(new ArrayList<>());
-            recyclerView.setAdapter(commentAdapter);
+            try {
+                //==========================================================================================
+                // RecyclerView for displaying comments
+                RecyclerView recyclerView = binding.RVCentralCommand;
+                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                commentAdapter = new CommentAdapter(new ArrayList<>());
+                recyclerView.setAdapter(commentAdapter);
 
-            // Fetch comments from Firebase and update RecyclerView
-            fetchCommentData();
-            fetchDataFromFirebase();
+                // Fetch comments from Firebase and update RecyclerView
+                fetchCommentData();
+                fetchDataFromFirebase();
 
-            // Add swipe-to-delete functionality
-            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
-                private ColorDrawable background = new ColorDrawable(Color.RED);
+                // Add swipe-to-delete functionality
+                ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                    private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
+                    private ColorDrawable background = new ColorDrawable(Color.RED);
 
-                @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                    return false;
-                }
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        return false;
+                    }
 
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    // Swipe to delete
-                    int position = viewHolder.getAdapterPosition();
-                    commentAdapter.removeItem(position);
-                }
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        // Swipe to delete
+                        int position = viewHolder.getAdapterPosition();
+                        commentAdapter.removeItem(position);
+                    }
 
-                @Override
-                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                    @Override
+                    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
-                    View itemView = viewHolder.itemView;
-                    int itemHeight = itemView.getHeight();
+                        View itemView = viewHolder.itemView;
+                        int itemHeight = itemView.getHeight();
 
-                    // Draw the red background
-                    background.setBounds(
-                            itemView.getRight() + (int) dX,
-                            itemView.getTop(),
-                            itemView.getRight(),
-                            itemView.getBottom()
-                    );
-                    background.draw(c);
+                        // Draw the red background
+                        background.setBounds(
+                                itemView.getRight() + (int) dX,
+                                itemView.getTop(),
+                                itemView.getRight(),
+                                itemView.getBottom()
+                        );
+                        background.draw(c);
 
-                    // Calculate position of delete icon
-                    int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
-                    int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
-                    int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
-                    int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
-                    int deleteIconRight = itemView.getRight() - deleteIconMargin;
+                        // Calculate position of delete icon
+                        int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                        int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
+                        int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
+                        int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
+                        int deleteIconRight = itemView.getRight() - deleteIconMargin;
 
-                    // Draw the delete icon
-                    deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
-                    deleteIcon.draw(c);
-                }
-            };
-            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+                        // Draw the delete icon
+                        deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                        deleteIcon.draw(c);
+                    }
+                };
+                new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
 
-            //==========================================================================================
-            // This is for Time and Date
-            // Initialize TextViews for displaying current time and date
-            final TextView currentTimeTextView = binding.currentTime;
-            final TextView currentDateTextView = binding.currentDate;
+                //==========================================================================================
+                // This is for Time and Date
+                // Initialize TextViews for displaying current time and date
+                final TextView currentTimeTextView = binding.currentTime;
+                final TextView currentDateTextView = binding.currentDate;
 
-            // Initialize Handler for updating time and date every second
-            handler = new Handler();
-            updateTimeRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    // Get current time and date
-                    long currentTimeMillis = System.currentTimeMillis();
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss a", Locale.getDefault());
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
-                    String currentTimeString = timeFormat.format(new Date(currentTimeMillis));
-                    String currentDateString = dateFormat.format(new Date(currentTimeMillis));
+                // Initialize Handler for updating time and date every second
+                handler = new Handler();
+                updateTimeRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        // Get current time and date
+                        long currentTimeMillis = System.currentTimeMillis();
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss a", Locale.getDefault());
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+                        String currentTimeString = timeFormat.format(new Date(currentTimeMillis));
+                        String currentDateString = dateFormat.format(new Date(currentTimeMillis));
 
-                    // Update TextViews
-                    currentTimeTextView.setText("Time: "+currentTimeString);
-                    currentDateTextView.setText("Date: "+currentDateString);
+                        // Update TextViews
+                        currentTimeTextView.setText("Time: " + currentTimeString);
+                        currentDateTextView.setText("Date: " + currentDateString);
 
-                    // Schedule the next update after 1 second
-                    handler.postDelayed(this, 1000);
-                }
-            };
+                        // Schedule the next update after 1 second
+                        handler.postDelayed(this, 1000);
+                    }
+                };
 
-            // Start updating time and date
-            handler.post(updateTimeRunnable);
+                // Start updating time and date
+                handler.post(updateTimeRunnable);
 
-            binding.PP.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
-                    startActivity(intent);
-                }
-            });
+                binding.PP.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), PowerPlantListActivity.class);
+                        startActivity(intent);
+                    }
+                });
 
-            binding.DD.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), DistributorListActivity.class);
-                    startActivity(intent);
-                }
-            });
+                binding.DD.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), DistributorListActivity.class);
+                        startActivity(intent);
+                    }
+                });
 
-            binding.addCentralCommand.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Inflate the dialog layout
-                    View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
+                binding.addCentralCommand.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Inflate the dialog layout
+                        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
 
-                    // Find views in the dialog layout
-                    EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
-                    Button buttonSave = dialogView.findViewById(R.id.buttonSave);
-                    Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
+                        // Find views in the dialog layout
+                        EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
+                        Button buttonSave = dialogView.findViewById(R.id.buttonSave);
+                        Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
 
-                    // Create the dialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setView(dialogView);
-                    AlertDialog dialog = builder.create();
+                        // Create the dialog
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setView(dialogView);
+                        AlertDialog dialog = builder.create();
 
-                    // Set click listener for Save button
-                    buttonSave.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Get input from EditText
-                            String inputData = editTextInput.getText().toString().trim();
+                        // Set click listener for Save button
+                        buttonSave.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Get input from EditText
+                                String inputData = editTextInput.getText().toString().trim();
 
-                            // Handle saving logic here
-                            // For example, you can save data to Firebase or perform other actions
+                                // Handle saving logic here
+                                // For example, you can save data to Firebase or perform other actions
 
-                            if (!inputData.isEmpty()){
-                                Toast.makeText(getContext(), "Hello "+inputData, Toast.LENGTH_SHORT).show();
-                                uploadCentralCommandToFirebase(inputData);
-                                showLoadingDialog();
+                                if (!inputData.isEmpty()) {
+                                    Toast.makeText(getContext(), "Hello " + inputData, Toast.LENGTH_SHORT).show();
+                                    uploadCentralCommandToFirebase(inputData);
+                                    showLoadingDialog();
+                                }
+
+                                // Dismiss the dialog
+                                dialog.dismiss();
                             }
+                        });
 
-                            // Dismiss the dialog
-                            dialog.dismiss();
-                        }
-                    });
+                        // Set click listener for Cancel button
+                        buttonCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Dismiss the dialog without saving
+                                dialog.dismiss();
+                            }
+                        });
 
-                    // Set click listener for Cancel button
-                    buttonCancel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Dismiss the dialog without saving
-                            dialog.dismiss();
-                        }
-                    });
-
-                    // Show the dialog
-                    dialog.show();
-                }
-            });
-        } catch (Exception e) {
-            // Example: Displaying a toast message to the user
-            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Show the dialog
+                        dialog.show();
+                    }
+                });
+            } catch (Exception e) {
+                // Example: Displaying a toast message to the user
+                Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // If not connected, show the no internet connection dialog
+            showNoInternetDialog();
         }
 
         return root;
@@ -300,7 +310,7 @@ public class HomeFragment extends Fragment {
                     }
                 });
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -335,7 +345,7 @@ public class HomeFragment extends Fragment {
                     Log.e("FetchCommentData", "Failed to fetch comments: " + databaseError.getMessage());
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             // Example: Displaying a toast message to the user
             Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -367,30 +377,30 @@ public class HomeFragment extends Fragment {
                     // Fetch total current demand value
                     float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
 
-                    float frequency = (totalCurrentCapacityValue/totalCurrentDemandValue)*50;
+                    float frequency = (totalCurrentCapacityValue / totalCurrentDemandValue) * 50;
 
-                    if (totalCurrentCapacityValue < totalCurrentDemandValue){
+                    if (totalCurrentCapacityValue < totalCurrentDemandValue) {
                         // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentCapacityValue) + " MW");
 
                         // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
 
-                        binding.frequency.setText("Frequency\n"+String.valueOf(frequency)+" Hz");
+                        binding.frequency.setText("Frequency\n" + String.valueOf(frequency) + " Hz");
                     } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
                         // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentDemandValue) + " MW");
 
                         // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
 
                         binding.frequency.setText("Frequency\n50 Hz");
-                    }else {
+                    } else {
                         // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n"+String.valueOf(totalCurrentCapacityValue)+" MW");
+                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentCapacityValue) + " MW");
 
                         // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n"+String.valueOf(totalCurrentDemandValue)+" MW");
+                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
 
                         binding.frequency.setText("Frequency\n50 Hz");
                     }
@@ -460,4 +470,25 @@ public class HomeFragment extends Fragment {
         });
 
     }
+
+    private void showNoInternetDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requireActivity().recreate(); // Restart the activity to check connection again
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requireActivity().finish(); // Close the app
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
 }

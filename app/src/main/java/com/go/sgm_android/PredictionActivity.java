@@ -170,10 +170,14 @@ public class PredictionActivity extends AppCompatActivity {
 
         private Button pickDateButton;
         private Calendar minDate;
+        private Calendar maxDate;
 
         public DatePickerFragment(Button pickDateButton) {
             this.pickDateButton = pickDateButton;
-            minDate = Calendar.getInstance(); // Set min date to current date
+            minDate = Calendar.getInstance();
+            minDate.add(Calendar.DAY_OF_MONTH, 1); // Set min date to next day
+            maxDate = Calendar.getInstance();
+            maxDate.add(Calendar.DAY_OF_MONTH, 7); // Set max date to 7 days from today
         }
 
         @Override
@@ -186,7 +190,9 @@ public class PredictionActivity extends AppCompatActivity {
 
             // Create a new instance of DatePickerDialog and return it.
             DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
-            dialog.getDatePicker().setMinDate(minDate.getTimeInMillis()); // Set minimum date to current date
+            DatePicker datePicker = dialog.getDatePicker();
+            datePicker.setMinDate(minDate.getTimeInMillis()); // Set minimum date to next day
+            datePicker.setMaxDate(maxDate.getTimeInMillis()); // Set maximum date to 7 days from today
             return dialog;
         }
 
@@ -200,4 +206,5 @@ public class PredictionActivity extends AppCompatActivity {
             PredictionActivity.selectedDate = selectedDate;
         }
     }
+
 }

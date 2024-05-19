@@ -2,6 +2,7 @@ package com.go.sgm_android;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.go.sgm_android.databinding.ActivityAddPowerPlantBinding;
@@ -158,93 +160,99 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         // Set the title of the activity
         setTitle("Add Power Plant");
 
-        // Initialize Firebase Database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        // Check for internet connection immediately
+        if (NetworkUtil.isConnected(this)) {
+            // If connected, proceed to main activity after the splash screen duration
+            // Initialize Firebase Database
+            mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Adding Power Plant...");
-        progressDialog.setCancelable(false);
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Adding Power Plant...");
+            progressDialog.setCancelable(false);
 
-        // Initialize AutoCompleteTextViews
-        divisionAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDivision);
-        districtAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDistrict);
-        upazillaAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewUpazilla);
-        autoCompleteTextViewOperator = findViewById(R.id.autoCompleteTextViewOperator);
-        autoCompleteTextViewOwnership = findViewById(R.id.autoCompleteTextViewOwnership);
-        autoCompleteTextViewFuelType = findViewById(R.id.autoCompleteTextViewFuelType);
-        autoCompleteTextViewMethod = findViewById(R.id.autoCompleteTextViewMethod);
+            // Initialize AutoCompleteTextViews
+            divisionAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDivision);
+            districtAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewDistrict);
+            upazillaAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewUpazilla);
+            autoCompleteTextViewOperator = findViewById(R.id.autoCompleteTextViewOperator);
+            autoCompleteTextViewOwnership = findViewById(R.id.autoCompleteTextViewOwnership);
+            autoCompleteTextViewFuelType = findViewById(R.id.autoCompleteTextViewFuelType);
+            autoCompleteTextViewMethod = findViewById(R.id.autoCompleteTextViewMethod);
 
-        // Initialize Adapters
-        divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, divisions);
-        divisionAutoCompleteTextView.setAdapter(divisionAdapter);
+            // Initialize Adapters
+            divisionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, divisions);
+            divisionAutoCompleteTextView.setAdapter(divisionAdapter);
 
-        districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        districtAutoCompleteTextView.setAdapter(districtAdapter);
+            districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            districtAutoCompleteTextView.setAdapter(districtAdapter);
 
-        upazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        upazillaAutoCompleteTextView.setAdapter(upazillaAdapter);
+            upazillaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            upazillaAutoCompleteTextView.setAdapter(upazillaAdapter);
 
-        // Set listeners for AutoCompleteTextViews
-        divisionAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                updateDistrictAutoCompleteTextView(position);
-                // Clear the text of the district AutoCompleteTextView when division changes
-                districtAutoCompleteTextView.setText("");
-                // Clear the text of the upazilla AutoCompleteTextView when division changes
-                upazillaAutoCompleteTextView.setText("");
-                // Clear the upazilla adapter when the division changes
-                upazillaAdapter.clear();
-                upazillaAdapter.notifyDataSetChanged();
-            }
-        });
-
-        districtAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                int divisionPosition = divisionAdapter.getPosition(divisionAutoCompleteTextView.getText().toString());
-                updateUpazillaAutoCompleteTextView(divisionPosition, position);
-                // Clear the text of the upazilla AutoCompleteTextView when district changes
-                upazillaAutoCompleteTextView.setText("");
-            }
-        });
-
-        ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.operators_array));
-        autoCompleteTextViewOperator.setAdapter(operatorAdapter);
-
-        ArrayAdapter<String> ownershipAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.ownership_array));
-        autoCompleteTextViewOwnership.setAdapter(ownershipAdapter);
-
-        ArrayAdapter<String> fuelTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.fuel_types_array));
-        autoCompleteTextViewFuelType.setAdapter(fuelTypeAdapter);
-
-        ArrayAdapter<String> methodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.methods_array));
-        autoCompleteTextViewMethod.setAdapter(methodAdapter);
-
-        // Handle button click
-        binding.addPowerPlantButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String division = divisionAutoCompleteTextView.getText().toString().trim();
-                String district = districtAutoCompleteTextView.getText().toString().trim();
-                String upazilla = upazillaAutoCompleteTextView.getText().toString().trim();
-                String operator = autoCompleteTextViewOperator.getText().toString().trim();
-                String ownership = autoCompleteTextViewOwnership.getText().toString().trim();
-                String fuelType = autoCompleteTextViewFuelType.getText().toString().trim();
-                String method = autoCompleteTextViewMethod.getText().toString().trim();
-                String output = binding.outputEditText.getText().toString().trim();
-                String name = binding.addPowerPlantEditText.getText().toString().trim();
-
-                if (!division.isEmpty() && !district.isEmpty() && !upazilla.isEmpty() && !operator.isEmpty() && !ownership.isEmpty() && !fuelType.isEmpty() && !method.isEmpty() && !output.isEmpty() && !name.isEmpty()) {
-//                    Toast.makeText(AddPowerPlantActivity.this, "Hello "+division+district+upazilla+operator+ownership+fuelType+method+output+name, Toast.LENGTH_SHORT).show();
-                    progressDialog.show();
-                    addPowerPlantToDatabase(division, district, upazilla, operator, ownership, fuelType, method, output, name);
-                    uploadPPDataToFirebase();
-                } else {
-                    Toast.makeText(AddPowerPlantActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            // Set listeners for AutoCompleteTextViews
+            divisionAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    updateDistrictAutoCompleteTextView(position);
+                    // Clear the text of the district AutoCompleteTextView when division changes
+                    districtAutoCompleteTextView.setText("");
+                    // Clear the text of the upazilla AutoCompleteTextView when division changes
+                    upazillaAutoCompleteTextView.setText("");
+                    // Clear the upazilla adapter when the division changes
+                    upazillaAdapter.clear();
+                    upazillaAdapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+
+            districtAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    int divisionPosition = divisionAdapter.getPosition(divisionAutoCompleteTextView.getText().toString());
+                    updateUpazillaAutoCompleteTextView(divisionPosition, position);
+                    // Clear the text of the upazilla AutoCompleteTextView when district changes
+                    upazillaAutoCompleteTextView.setText("");
+                }
+            });
+
+            ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.operators_array));
+            autoCompleteTextViewOperator.setAdapter(operatorAdapter);
+
+            ArrayAdapter<String> ownershipAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.ownership_array));
+            autoCompleteTextViewOwnership.setAdapter(ownershipAdapter);
+
+            ArrayAdapter<String> fuelTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.fuel_types_array));
+            autoCompleteTextViewFuelType.setAdapter(fuelTypeAdapter);
+
+            ArrayAdapter<String> methodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.methods_array));
+            autoCompleteTextViewMethod.setAdapter(methodAdapter);
+
+            // Handle button click
+            binding.addPowerPlantButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String division = divisionAutoCompleteTextView.getText().toString().trim();
+                    String district = districtAutoCompleteTextView.getText().toString().trim();
+                    String upazilla = upazillaAutoCompleteTextView.getText().toString().trim();
+                    String operator = autoCompleteTextViewOperator.getText().toString().trim();
+                    String ownership = autoCompleteTextViewOwnership.getText().toString().trim();
+                    String fuelType = autoCompleteTextViewFuelType.getText().toString().trim();
+                    String method = autoCompleteTextViewMethod.getText().toString().trim();
+                    String output = binding.outputEditText.getText().toString().trim();
+                    String name = binding.addPowerPlantEditText.getText().toString().trim();
+
+                    if (!division.isEmpty() && !district.isEmpty() && !upazilla.isEmpty() && !operator.isEmpty() && !ownership.isEmpty() && !fuelType.isEmpty() && !method.isEmpty() && !output.isEmpty() && !name.isEmpty()) {
+//                    Toast.makeText(AddPowerPlantActivity.this, "Hello "+division+district+upazilla+operator+ownership+fuelType+method+output+name, Toast.LENGTH_SHORT).show();
+                        progressDialog.show();
+                        addPowerPlantToDatabase(division, district, upazilla, operator, ownership, fuelType, method, output, name);
+                        uploadPPDataToFirebase();
+                    } else {
+                        Toast.makeText(AddPowerPlantActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });        } else {
+            // If not connected, show the no internet connection dialog
+            showNoInternetDialog();
+        }
     }
 
     private void addPowerPlantToDatabase(String division, String district, String upazilla, String operator,
@@ -331,5 +339,25 @@ public class AddPowerPlantActivity extends AppCompatActivity {
         upazillaAdapter.clear();
         upazillaAdapter.addAll(selectedUpazillas);
         upazillaAdapter.notifyDataSetChanged();
+    }
+
+    private void showNoInternetDialog() {
+        new AlertDialog.Builder(AddPowerPlantActivity.this)
+                .setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recreate(); // Restart the activity to check connection again
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish(); // Close the app
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 }

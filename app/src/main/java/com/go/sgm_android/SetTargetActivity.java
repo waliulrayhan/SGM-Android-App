@@ -3,6 +3,7 @@ package com.go.sgm_android;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -54,88 +56,95 @@ public class SetTargetActivity extends AppCompatActivity {
         // Set the title of the activity
         setTitle("Set Target");
 
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Uploading data...");
-        progressDialog.setCancelable(false);
+        // Check for internet connection immediately
+        if (NetworkUtil.isConnected(this)) {
+            // If connected, proceed to main activity after the splash screen duration
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Uploading data...");
+            progressDialog.setCancelable(false);
 
-        binding.pickDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Pass the button reference to the DatePickerFragment
-                DialogFragment newFragment = new DatePickerFragment(binding.pickDate);
-                newFragment.show(getSupportFragmentManager(), "datePicker");
-            }
-        });
+            binding.pickDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Pass the button reference to the DatePickerFragment
+                    DialogFragment newFragment = new DatePickerFragment(binding.pickDate);
+                    newFragment.show(getSupportFragmentManager(), "datePicker");
+                }
+            });
 
-        // Initialize AutoCompleteTextViews
-        typeAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewType);
-        nameAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewName);
+            // Initialize AutoCompleteTextViews
+            typeAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewType);
+            nameAutoCompleteTextView = findViewById(R.id.autoCompleteTextViewName);
 
-        // Initialize Adapters
-        typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, type);
-        ppnameAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        ddnameAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            // Initialize Adapters
+            typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, type);
+            ppnameAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+            ddnameAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
 
-        // Set adapters to typeAutoCompleteTextView
-        typeAutoCompleteTextView.setAdapter(typeAdapter);
+            // Set adapters to typeAutoCompleteTextView
+            typeAutoCompleteTextView.setAdapter(typeAdapter);
 
-        // Set a listener for the typeAutoCompleteTextView to fetch data accordingly
-        typeAutoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedType = (String) parent.getItemAtPosition(position);
-            if (selectedType.equals("Power Plant")) {
-                // Clear the text in the nameAutoCompleteTextView
-                nameAutoCompleteTextView.setText("");
-                // Set the adapter for power plant names
-                nameAutoCompleteTextView.setAdapter(ppnameAdapter);
-                // Fetch power plant names from Firebase and update ppnameAdapter
-                fetchPowerPlantNames();
-            } else if (selectedType.equals("Distributor")) {
-                // Clear the text in the nameAutoCompleteTextView
-                nameAutoCompleteTextView.setText("");
-                // Set the adapter for distributor names
-                nameAutoCompleteTextView.setAdapter(ddnameAdapter);
-                // Show hardcoded distributor names
+            // Set a listener for the typeAutoCompleteTextView to fetch data accordingly
+            typeAutoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
+                String selectedType = (String) parent.getItemAtPosition(position);
+                if (selectedType.equals("Power Plant")) {
+                    // Clear the text in the nameAutoCompleteTextView
+                    nameAutoCompleteTextView.setText("");
+                    // Set the adapter for power plant names
+                    nameAutoCompleteTextView.setAdapter(ppnameAdapter);
+                    // Fetch power plant names from Firebase and update ppnameAdapter
+                    fetchPowerPlantNames();
+                } else if (selectedType.equals("Distributor")) {
+                    // Clear the text in the nameAutoCompleteTextView
+                    nameAutoCompleteTextView.setText("");
+                    // Set the adapter for distributor names
+                    nameAutoCompleteTextView.setAdapter(ddnameAdapter);
+                    // Show hardcoded distributor names
 //                String[] distributorNames = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
-                String[] distributorNames = {"Bangladesh Power Development Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited"};
-                ddnameAdapter.clear();
-                ddnameAdapter.addAll(distributorNames);
-                ddnameAdapter.notifyDataSetChanged();
-            }
-        });
-
-        // Set a click listener for the save button
-        binding.setTargetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get the selected type and name
-                String selectedType = typeAutoCompleteTextView.getText().toString();
-                String selectedName = nameAutoCompleteTextView.getText().toString();
-                String targetText = binding.targetEditText.getText().toString().trim();
-
-                // Check if any field is empty
-                if (selectedDate.isEmpty() || selectedType.isEmpty() || selectedName.isEmpty() || targetText.isEmpty() || selectedDate.equals("Select Date")) {
-                    Toast.makeText(SetTargetActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                    return; // Exit the method early
+                    String[] distributorNames = {"Bangladesh Power Development Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited"};
+                    ddnameAdapter.clear();
+                    ddnameAdapter.addAll(distributorNames);
+                    ddnameAdapter.notifyDataSetChanged();
                 }
+            });
 
-                // Attempt to parse the target text as a float
-                float selectedTarget;
-                try {
-                    selectedTarget = Float.parseFloat(targetText);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(SetTargetActivity.this, "Please enter a valid target value", Toast.LENGTH_SHORT).show();
-                    return; // Exit the method early
+            // Set a click listener for the save button
+            binding.setTargetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Get the selected type and name
+                    String selectedType = typeAutoCompleteTextView.getText().toString();
+                    String selectedName = nameAutoCompleteTextView.getText().toString();
+                    String targetText = binding.targetEditText.getText().toString().trim();
+
+                    // Check if any field is empty
+                    if (selectedDate.isEmpty() || selectedType.isEmpty() || selectedName.isEmpty() || targetText.isEmpty() || selectedDate.equals("Select Date")) {
+                        Toast.makeText(SetTargetActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                        return; // Exit the method early
+                    }
+
+                    // Attempt to parse the target text as a float
+                    float selectedTarget;
+                    try {
+                        selectedTarget = Float.parseFloat(targetText);
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(SetTargetActivity.this, "Please enter a valid target value", Toast.LENGTH_SHORT).show();
+                        return; // Exit the method early
+                    }
+
+                    // Show toast with selected type and name
+                    String message = "Date: " + selectedDate + " Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: " + selectedTarget;
+                    Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
+
+                    // Call your method to set target data into Firebase (uncomment when ready)
+                    setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
+                    progressDialog.show();
                 }
-
-                // Show toast with selected type and name
-                String message = "Date: " + selectedDate + " Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: " + selectedTarget;
-                Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
-
-                // Call your method to set target data into Firebase (uncomment when ready)
-                 setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
-                 progressDialog.show();
-            }
-        });
+            });
+        } else {
+            // If not connected, show the no internet connection dialog
+            showNoInternetDialog();
+        }
 
     }
 
@@ -277,6 +286,26 @@ public class SetTargetActivity extends AppCompatActivity {
             String selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
             pickDateButton.setText(selectedDate);
         }
+    }
+
+    private void showNoInternetDialog() {
+        new AlertDialog.Builder(SetTargetActivity.this)
+                .setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recreate(); // Restart the activity to check connection again
+                    }
+                })
+                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish(); // Close the app
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 }
 
