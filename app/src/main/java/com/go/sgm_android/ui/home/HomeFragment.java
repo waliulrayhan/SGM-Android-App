@@ -209,6 +209,10 @@ public class HomeFragment extends Fragment {
                                 // Handle saving logic here
                                 // For example, you can save data to Firebase or perform other actions
 
+                                if (inputData.isEmpty()){
+                                    Toast.makeText(getContext(), "Please, Fill the Comment Field.", Toast.LENGTH_SHORT).show();
+                                }
+
                                 if (!inputData.isEmpty()) {
                                     Toast.makeText(getContext(), "Hello " + inputData, Toast.LENGTH_SHORT).show();
                                     uploadCentralCommandToFirebase(inputData);

@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.go.sgm_android.Adapter.DistributorAdapter;
-import com.go.sgm_android.Adapter.SngleDistributorAdapter;
+
+import com.go.sgm_android.Adapter.SingleDDAdapter;
 import com.go.sgm_android.databinding.ActivityDistributorDetailsBinding;
 import com.go.sgm_android.model.Distributor;
 import com.google.firebase.database.DataSnapshot;
@@ -21,15 +21,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class DistributorDetailsActivity extends AppCompatActivity {
 
     ActivityDistributorDetailsBinding binding;
-    private SngleDistributorAdapter distributorAdapter;
+    private SingleDDAdapter distributorAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +52,7 @@ public class DistributorDetailsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         // Initialize adapters
-        distributorAdapter = new SngleDistributorAdapter(new ArrayList<>());
+        distributorAdapter = new SingleDDAdapter(new ArrayList<>());
         // Set up adapter
         recyclerView.setAdapter(distributorAdapter);
 
@@ -75,18 +73,18 @@ public class DistributorDetailsActivity extends AppCompatActivity {
                 List<Distributor> distributors = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    if (snapshot.exists()){
+                    if (snapshot.exists() && snapshot.hasChild("ddname") && snapshot.hasChild("ddzone") && snapshot.hasChild("ddcircle")) {
                         String name = snapshot.child("ddname").getValue(String.class);
                         String zone = snapshot.child("ddzone").getValue(String.class);
                         String circle = snapshot.child("ddcircle").getValue(String.class);
 
-                        // You can also fetch other fields similarly
-                        Distributor distributor = new Distributor(name, zone, circle);
-                        distributors.add(distributor);
+                        if (name != null && zone != null && circle != null) {
+                            Distributor distributor = new Distributor(name, zone, circle);
+                            distributors.add(distributor);
+                        }
                     }
                 }
-                // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here
-                // If needed, add logic here to merge or process data from both references
+                // Update the adapter with the new list of distributors
                 distributorAdapter.setDistributors(distributors);
             }
 
@@ -96,4 +94,5 @@ public class DistributorDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
 }
