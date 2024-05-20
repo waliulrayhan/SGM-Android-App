@@ -94,5 +94,4 @@ public class DistributorDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
 }

@@ -32,8 +32,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class SetTargetActivity extends AppCompatActivity {
 
@@ -41,7 +43,7 @@ public class SetTargetActivity extends AppCompatActivity {
     private AutoCompleteTextView typeAutoCompleteTextView, nameAutoCompleteTextView;
     private ArrayAdapter<String> typeAdapter, ppnameAdapter, ddnameAdapter;
     private String[] type = {"Power Plant", "Distributor"};
-    static String selectedDate="";
+    static String selectedDate = "";
     private ProgressDialog progressDialog;
 
     @Override
@@ -59,7 +61,7 @@ public class SetTargetActivity extends AppCompatActivity {
         // Check for internet connection immediately
         if (NetworkUtil.isConnected(this)) {
             // If connected, proceed to main activity after the splash screen duration
-            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Uploading data...");
             progressDialog.setCancelable(false);
 
@@ -100,7 +102,6 @@ public class SetTargetActivity extends AppCompatActivity {
                     // Set the adapter for distributor names
                     nameAutoCompleteTextView.setAdapter(ddnameAdapter);
                     // Show hardcoded distributor names
-//                String[] distributorNames = {"Bangladesh Power Development Board", "Bangladesh Rural Electrification Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited", "Northern Electricity Supply Company PLC", "West Zone Power Distribution Company Limited"};
                     String[] distributorNames = {"Bangladesh Power Development Board", "Dhaka Electric Supply Company Limited", "Dhaka Power Distribution Company Limited"};
                     ddnameAdapter.clear();
                     ddnameAdapter.addAll(distributorNames);
@@ -136,7 +137,7 @@ public class SetTargetActivity extends AppCompatActivity {
                     String message = "Date: " + selectedDate + " Selected Type: " + selectedType + ", Selected Name: " + selectedName + ", Target: " + selectedTarget;
                     Toast.makeText(SetTargetActivity.this, message, Toast.LENGTH_SHORT).show();
 
-                    // Call your method to set target data into Firebase (uncomment when ready)
+                    // Call your method to set target data into Firebase
                     setTargetDataIntoFirebase(selectedDate, selectedType, selectedName, selectedTarget);
                     progressDialog.show();
                 }
@@ -145,7 +146,6 @@ public class SetTargetActivity extends AppCompatActivity {
             // If not connected, show the no internet connection dialog
             showNoInternetDialog();
         }
-
     }
 
     private void setTargetDataIntoFirebase(String selectedDate, String selectedType, String selectedName, float selectedTarget) {
@@ -162,42 +162,15 @@ public class SetTargetActivity extends AppCompatActivity {
                         if (snapshot.child("ppname").exists() && snapshot.child("ppname").getValue(String.class).equals(selectedName)) {
                             // This snapshot corresponds to the selected power plant
                             DatabaseReference powerPlantDateRef = snapshot.child("Date").child(selectedDate).getRef();
-                            powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(selectedTarget)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            progressDialog.dismiss();
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(SetTargetActivity.this, "Data uploaded successfully", Toast.LENGTH_SHORT).show();
-                                                // Navigate to MainActivity
-                                                startActivity(new Intent(SetTargetActivity.this, MainActivity.class));
-                                                finish(); // Close the current activity
-                                            } else {
-                                                Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    progressDialog.dismiss();
-                    Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
-                    Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        if (selectedType.equals("Distributor")) {
-            // Upload Distributor Data
-            DatabaseReference distributorRef = databaseRef.child("Distributor").child(selectedName);
-            distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    DatabaseReference distributorDateRef = distributorRef.child("Date").child(selectedDate).getRef();
-                    distributorDateRef.child("demand").child("ddtargetdemand").setValue(selectedTarget)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            // Create a map to update multiple fields at once
+                            Map<String, Object> updates = new HashMap<>();
+                            updates.put("capacity/pptargetCapacity", selectedTarget);
+                            updates.put("capacity/ppcurrentCapacity", 0);
+                            updates.put("total/pptotalCurrentCapacity", 0);
+                            updates.put("alert", false);
+
+                            powerPlantDateRef.updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     progressDialog.dismiss();
@@ -211,6 +184,48 @@ public class SetTargetActivity extends AppCompatActivity {
                                     }
                                 }
                             });
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    progressDialog.dismiss();
+                    Log.e("UploadDataToFirebase", "Failed to upload power plant data: " + databaseError.getMessage());
+                    Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+        if (selectedType.equals("Distributor")) {
+            // Upload Distributor Data
+            DatabaseReference distributorRef = databaseRef.child("Distributor").child(selectedName);
+            distributorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    DatabaseReference distributorDateRef = distributorRef.child("Date").child(selectedDate).getRef();
+
+                    // Create a map to update multiple fields at once
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("demand/ddtargetdemand", selectedTarget);
+                    updates.put("demand/ddcurrentDemand", 0);
+                    updates.put("total/ddtotalCurrentdemand", 0);
+                    updates.put("alert", false);
+
+                    distributorDateRef.updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            progressDialog.dismiss();
+                            if (task.isSuccessful()) {
+                                Toast.makeText(SetTargetActivity.this, "Data uploaded successfully", Toast.LENGTH_SHORT).show();
+                                // Navigate to MainActivity
+                                startActivity(new Intent(SetTargetActivity.this, MainActivity.class));
+                                finish(); // Close the current activity
+                            } else {
+                                Toast.makeText(SetTargetActivity.this, "Failed to upload data: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 }
 
                 @Override
@@ -283,7 +298,7 @@ public class SetTargetActivity extends AppCompatActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Display the selected date in the button
-            String selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
+            selectedDate = String.format("%02d-%02d-%d", day, month + 1, year);
             pickDateButton.setText(selectedDate);
         }
     }
@@ -308,4 +323,3 @@ public class SetTargetActivity extends AppCompatActivity {
                 .show();
     }
 }
-

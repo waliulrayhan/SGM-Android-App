@@ -65,7 +65,6 @@ public class HomeFragment extends Fragment {
     private Runnable updateTimeRunnable;
     private CommentAdapter commentAdapter;
     private AlertDialog loadingDialog; // Reference to the loading dialog
-    String text = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
