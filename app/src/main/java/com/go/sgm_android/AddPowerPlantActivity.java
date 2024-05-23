@@ -312,9 +312,7 @@ public class AddPowerPlantActivity extends AppCompatActivity {
                     powerPlantDateRef.child("capacity").child("ppcurrentCapacity").setValue(0);
                     powerPlantDateRef.child("capacity").child("pptargetCapacity").setValue(0);
                     powerPlantDateRef.child("total").child("pptotalCurrentCapacity").setValue(0);
-                    powerPlantDateRef.child("alert").setValue("false");
-                    powerPlantDateRef.child("history").child("pptotalCurrentCapacity").setValue(0);
-                    powerPlantDateRef.child("history").child("last_update_time").setValue("11.59.59 PM");
+                    powerPlantDateRef.child("alert").setValue(false);
                 }
             }
 
