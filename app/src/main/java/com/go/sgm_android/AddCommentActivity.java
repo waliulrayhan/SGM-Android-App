@@ -48,7 +48,7 @@ public class AddCommentActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(getResources().getColor(R.color.glitter_lake));
 
         // Set the title of the activity
-        setTitle("Add Distributor");
+        setTitle("Add Comment");
 
 
         // Find views in the dialog layout
