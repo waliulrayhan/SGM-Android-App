@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.go.sgm_android.Adapter.CommentAdapter;
+import com.go.sgm_android.AddCommentActivity;
 import com.go.sgm_android.DistributorListActivity;
 import com.go.sgm_android.NetworkUtil;
 import com.go.sgm_android.PowerPlantListActivity;
@@ -86,8 +87,8 @@ public class HomeFragment extends Fragment {
                 recyclerView.setAdapter(commentAdapter);
 
                 // Fetch comments from Firebase and update RecyclerView
-                fetchCommentData();
-                fetchDataFromFirebase();
+//                fetchCommentData();
+//                fetchDataFromFirebase();
 
                 // Add swipe-to-delete functionality
                 ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -185,55 +186,59 @@ public class HomeFragment extends Fragment {
                 binding.addCentralCommand.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Inflate the dialog layout
-                        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
 
-                        // Find views in the dialog layout
-                        EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
-                        Button buttonSave = dialogView.findViewById(R.id.buttonSave);
-                        Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
+                        Intent intent = new Intent(getContext(), AddCommentActivity.class);
+                        startActivity(intent);
 
-                        // Create the dialog
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setView(dialogView);
-                        AlertDialog dialog = builder.create();
-
-                        // Set click listener for Save button
-                        buttonSave.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Get input from EditText
-                                String inputData = editTextInput.getText().toString().trim();
-
-                                // Handle saving logic here
-                                // For example, you can save data to Firebase or perform other actions
-
-                                if (inputData.isEmpty()){
-                                    Toast.makeText(getContext(), "Please, Fill the Comment Field.", Toast.LENGTH_SHORT).show();
-                                }
-
-                                if (!inputData.isEmpty()) {
-                                    Toast.makeText(getContext(), "Hello " + inputData, Toast.LENGTH_SHORT).show();
-                                    uploadCentralCommandToFirebase(inputData);
-                                    showLoadingDialog();
-                                }
-
-                                // Dismiss the dialog
-                                dialog.dismiss();
-                            }
-                        });
-
-                        // Set click listener for Cancel button
-                        buttonCancel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Dismiss the dialog without saving
-                                dialog.dismiss();
-                            }
-                        });
-
-                        // Show the dialog
-                        dialog.show();
+//                        // Inflate the dialog layout
+//                        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
+//
+//                        // Find views in the dialog layout
+//                        EditText editTextInput = dialogView.findViewById(R.id.editTextInput);
+//                        Button buttonSave = dialogView.findViewById(R.id.buttonSave);
+//                        Button buttonCancel = dialogView.findViewById(R.id.buttonCancel);
+//
+//                        // Create the dialog
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                        builder.setView(dialogView);
+//                        AlertDialog dialog = builder.create();
+//
+//                        // Set click listener for Save button
+//                        buttonSave.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                // Get input from EditText
+//                                String inputData = editTextInput.getText().toString().trim();
+//
+//                                // Handle saving logic here
+//                                // For example, you can save data to Firebase or perform other actions
+//
+//                                if (inputData.isEmpty()){
+//                                    Toast.makeText(getContext(), "Please, Fill the Comment Field.", Toast.LENGTH_SHORT).show();
+//                                }
+//
+//                                if (!inputData.isEmpty()) {
+//                                    Toast.makeText(getContext(), "Hello " + inputData, Toast.LENGTH_SHORT).show();
+//                                    uploadCentralCommandToFirebase(inputData);
+//                                    showLoadingDialog();
+//                                }
+//
+//                                // Dismiss the dialog
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        // Set click listener for Cancel button
+//                        buttonCancel.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                // Dismiss the dialog without saving
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        // Show the dialog
+//                        dialog.show();
                     }
                 });
             } catch (Exception e) {
@@ -250,74 +255,77 @@ public class HomeFragment extends Fragment {
 
     // Method to show the loading dialog
     private void showLoadingDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setView(LayoutInflater.from(requireContext()).inflate(R.layout.dialog_loading, null));
-        builder.setCancelable(false); // Prevent dismissing dialog by touching outside
-        loadingDialog = builder.create();
-        loadingDialog.show();
+        if (isAdded() && !isDetached() && !isRemoving() && loadingDialog == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setView(LayoutInflater.from(requireContext()).inflate(R.layout.dialog_loading, null));
+            builder.setCancelable(false); // Prevent dismissing dialog by touching outside
+            loadingDialog = builder.create();
+            loadingDialog.show();
+        }
     }
 
-    // Method to hide the loading dialog
     private void hideLoadingDialog() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
+            loadingDialog = null;
         }
     }
 
-    private void uploadCentralCommandToFirebase(String inputData) {
 
-        try {
-            // Get the current date
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-            String currentDate = dateFormat.format(new Date());
-
-            // Reference to "SGM/Date/currentDate/comments"
-            DatabaseReference commentRef = FirebaseDatabase.getInstance()
-                    .getReference()
-                    .child("SGM")
-                    .child("Date")
-                    .child(currentDate)
-                    .child("comments");
-
-            // Push the comment to generate a unique key
-            String commentKey = commentRef.push().getKey();
-
-            // Create a map to hold the comment data
-            Map<String, Object> commentData = new HashMap<>();
-            commentData.put("comment", inputData);
-
-            // Upload the comment to Firebase using a transaction
-            if (commentKey != null) {
-                commentRef.child(commentKey).runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        // Set the comment data
-                        mutableData.setValue(commentData);
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        if (databaseError == null) {
-                            // Comment uploaded successfully
-                            Log.d("UploadCentralCommand", "Comment uploaded successfully");
-                            // You can add any additional actions you want to perform on success
-                            hideLoadingDialog();
-                        } else {
-                            // Failed to upload comment
-                            Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
-                            // Handle the error, if needed
-                            hideLoadingDialog();
-                        }
-                    }
-                });
-            }
-        } catch (Exception e) {
-            // Example: Displaying a toast message to the user
-            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//    private void uploadCentralCommandToFirebase(String inputData) {
+//
+//        try {
+//            // Get the current date
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+//            String currentDate = dateFormat.format(new Date());
+//
+//            // Reference to "SGM/Date/currentDate/comments"
+//            DatabaseReference commentRef = FirebaseDatabase.getInstance()
+//                    .getReference()
+//                    .child("SGM")
+//                    .child("Date")
+//                    .child(currentDate)
+//                    .child("comments");
+//
+//            // Push the comment to generate a unique key
+//            String commentKey = commentRef.push().getKey();
+//
+//            // Create a map to hold the comment data
+//            Map<String, Object> commentData = new HashMap<>();
+//            commentData.put("comment", inputData);
+//
+//            // Upload the comment to Firebase using a transaction
+//            if (commentKey != null) {
+//                commentRef.child(commentKey).runTransaction(new Transaction.Handler() {
+//                    @NonNull
+//                    @Override
+//                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+//                        // Set the comment data
+//                        mutableData.setValue(commentData);
+//                        return Transaction.success(mutableData);
+//                    }
+//
+//                    @Override
+//                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+//                        if (databaseError == null) {
+//                            // Comment uploaded successfully
+//                            Log.d("UploadCentralCommand", "Comment uploaded successfully");
+//                            // You can add any additional actions you want to perform on success
+//                            hideLoadingDialog();
+//                        } else {
+//                            // Failed to upload comment
+//                            Log.e("UploadCentralCommand", "Failed to upload comment: " + databaseError.getMessage());
+//                            // Handle the error, if needed
+//                            hideLoadingDialog();
+//                        }
+//                    }
+//                });
+//            }
+//        } catch (Exception e) {
+//            // Example: Displaying a toast message to the user
+//            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     private void fetchCommentData() {
         try {
@@ -326,6 +334,8 @@ public class HomeFragment extends Fragment {
 
             DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
                     .child("SGM").child("Date").child(currentDate).child("comments");
+
+            showLoadingDialog(); // Show loading dialog before starting the data fetch
 
             commentRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -337,20 +347,28 @@ public class HomeFragment extends Fragment {
                             comments.add(0, new Comment(commentText));
                         }
                     }
-                    commentAdapter.setComments(comments);
-
-                    // Hide the Loading
-                    hideLoadingDialog();
+                    if (isAdded() && !isDetached()) {
+                        getActivity().runOnUiThread(() -> {
+                            commentAdapter.setComments(comments);
+                            hideLoadingDialog(); // Hide loading dialog after data is set
+                        });
+                    } else {
+                        hideLoadingDialog(); // Ensure the dialog is hidden even if the fragment is not in a valid state
+                    }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.e("FetchCommentData", "Failed to fetch comments: " + databaseError.getMessage());
+                    hideLoadingDialog(); // Hide loading dialog in case of failure
                 }
             });
         } catch (Exception e) {
-            // Example: Displaying a toast message to the user
-            Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e("FetchCommentData", "Exception: " + e.getMessage());
+            if (isAdded() && !isDetached()) {
+                Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            hideLoadingDialog(); // Ensure the dialog is hidden in case of exception
         }
     }
 
@@ -361,66 +379,61 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchDataFromFirebase() {
-        // Get the current date
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
 
-        // Construct the Firebase reference path for the current date
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("SGM").child("Date").child(currentDate);
+
+        showLoadingDialog(); // Show loading dialog before starting the data fetch
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Retrieve total nodes
                     DataSnapshot totalsSnapshot = dataSnapshot.child("total");
 
-                    // Fetch total current capacity value
-                    float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(float.class);
-                    // Fetch total current demand value
-                    float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(float.class);
+                    Float totalCurrentCapacityValue = totalsSnapshot.child("AllppcurrentCapacity").getValue(Float.class);
+                    Float totalCurrentDemandValue = totalsSnapshot.child("AllddcurrentDemand").getValue(Float.class);
 
-                    float frequency = (totalCurrentCapacityValue / totalCurrentDemandValue) * 50;
+                    if (totalCurrentCapacityValue != null && totalCurrentDemandValue != null) {
+                        float frequency = (totalCurrentCapacityValue / totalCurrentDemandValue) * 50;
 
-                    if (totalCurrentCapacityValue < totalCurrentDemandValue) {
-                        // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentCapacityValue) + " MW");
+                        if (isAdded() && !isDetached()) {
+                            getActivity().runOnUiThread(() -> {
+                                if (totalCurrentCapacityValue < totalCurrentDemandValue) {
+                                    binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentCapacityValue + " MW");
+                                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
+                                    binding.frequency.setText("Frequency\n" + frequency + " Hz");
+                                } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
+                                    binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentDemandValue + " MW");
+                                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
+                                    binding.frequency.setText("Frequency\n50 Hz");
+                                } else {
+                                    binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentCapacityValue + " MW");
+                                    binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
+                                    binding.frequency.setText("Frequency\n50 Hz");
+                                }
 
-                        // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
-
-                        binding.frequency.setText("Frequency\n" + String.valueOf(frequency) + " Hz");
-                    } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
-                        // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentDemandValue) + " MW");
-
-                        // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
-
-                        binding.frequency.setText("Frequency\n50 Hz");
+                                hideLoadingDialog(); // Hide loading dialog after data is set
+                            });
+                        } else {
+                            hideLoadingDialog(); // Ensure the dialog is hidden even if the fragment is not in a valid state
+                        }
                     } else {
-                        // Update UI with fetched values
-                        binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + String.valueOf(totalCurrentCapacityValue) + " MW");
-
-                        // Update UI with fetched values
-                        binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + String.valueOf(totalCurrentDemandValue) + " MW");
-
-                        binding.frequency.setText("Frequency\n50 Hz");
+                        Log.e("FetchDataFromFirebase", "Total current capacity or demand value is null");
+                        hideLoadingDialog(); // Hide loading dialog in case of error
                     }
-
-                    // Hide the Loading
-                    hideLoadingDialog();
-
-
                 } else {
-                    // Handle case when data doesn't exist
-                    // You can display a message or take appropriate action
+                    Log.e("FetchDataFromFirebase", "DataSnapshot does not exist for current date");
+                    hideLoadingDialog(); // Hide loading dialog in case of error
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle onCancelled
+                Log.e("FetchDataFromFirebase", "Failed to fetch data: " + databaseError.getMessage());
+                hideLoadingDialog(); // Hide loading dialog in case of failure
             }
         });
 
@@ -451,27 +464,44 @@ public class HomeFragment extends Fragment {
                 }
 
                 String alertMessage = alertMessageBuilder.toString();
-                if (hasAlerts) {
-                    binding.marquee.setSelected(true);
-                    binding.marquee.setText(alertMessage);
-                    binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
-                    binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
-                    binding.marquee.setVisibility(View.VISIBLE);
+                final boolean finalHasAlerts = hasAlerts;
+                if (isAdded() && !isDetached()) {
+                    getActivity().runOnUiThread(() -> {
+                        if (finalHasAlerts) {
+                            binding.marquee.setSelected(true);
+                            binding.marquee.setText(alertMessage);
+                            binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
+                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+                            binding.marquee.setVisibility(View.VISIBLE);
+                        } else {
+                            binding.marquee.setSelected(true);
+                            binding.marquee.setText("Success: All power plant meet the target.               Success: All power plant meet the target.");
+                            binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
+                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+                            binding.marquee.setVisibility(View.VISIBLE);
+                        }
+
+                        hideLoadingDialog(); // Hide loading dialog after data is set
+                    });
                 } else {
-                    binding.marquee.setSelected(true);
-                    binding.marquee.setText("Success: All power plant meet the target.               Success: All power plant meet the target.");
-                    binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
-                    binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
-                    binding.marquee.setVisibility(View.VISIBLE);
+                    hideLoadingDialog(); // Ensure the dialog is hidden even if the fragment is not in a valid state
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("PowerPlantListActivity", "Failed to fetch power plant data from powerPlantRef: " + databaseError.getMessage());
+                hideLoadingDialog(); // Hide loading dialog in case of failure
             }
         });
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        fetchCommentData();  // Fetch comments first
+        fetchDataFromFirebase();  // Then fetch other data
     }
 
     private void showNoInternetDialog() {

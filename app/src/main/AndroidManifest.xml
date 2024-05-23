@@ -29,13 +29,17 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".AddCommentActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SGMAndroid.NoActionBar" />
         <activity
             android:name=".PredictionActivity"
-            android:parentActivityName=".SettingsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".SettingsActivity" />
         <activity
             android:name=".GraphActivity"
             android:exported="false"
