@@ -72,25 +72,15 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Check for internet connection immediately
         if (NetworkUtil.isConnected(getContext())) {
-            // If connected, proceed to main activity after the splash screen duration
-            // Show loading dialog
             showLoadingDialog();
 
             try {
-                //==========================================================================================
-                // RecyclerView for displaying comments
                 RecyclerView recyclerView = binding.RVCentralCommand;
                 recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
                 commentAdapter = new CommentAdapter(new ArrayList<>());
                 recyclerView.setAdapter(commentAdapter);
 
-                // Fetch comments from Firebase and update RecyclerView
-//                fetchCommentData();
-//                fetchDataFromFirebase();
-
-                // Add swipe-to-delete functionality
                 ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     private Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.delete_forever_24dp_fill0);
                     private ColorDrawable background = new ColorDrawable(Color.RED);
@@ -102,9 +92,27 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                        // Swipe to delete
                         int position = viewHolder.getAdapterPosition();
-                        commentAdapter.removeItem(position);
+                        String commentKey = commentAdapter.getCommentKey(position);
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                        String currentDate = dateFormat.format(new Date());
+                        DatabaseReference commentRef = FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("SGM")
+                                .child("Date")
+                                .child(currentDate)
+                                .child("comments")
+                                .child(commentKey);
+
+                        commentRef.removeValue().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                commentAdapter.removeItem(position);
+                                Toast.makeText(getContext(), "Comment deleted", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "Failed to delete comment", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
 
                     @Override
@@ -114,57 +122,41 @@ public class HomeFragment extends Fragment {
                         View itemView = viewHolder.itemView;
                         int itemHeight = itemView.getHeight();
 
-                        // Draw the red background
-                        background.setBounds(
-                                itemView.getRight() + (int) dX,
-                                itemView.getTop(),
-                                itemView.getRight(),
-                                itemView.getBottom()
-                        );
+                        background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
                         background.draw(c);
 
-                        // Calculate position of delete icon
                         int deleteIconMargin = (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
                         int deleteIconTop = itemView.getTop() + (itemHeight - deleteIcon.getIntrinsicHeight()) / 2;
                         int deleteIconBottom = deleteIconTop + deleteIcon.getIntrinsicHeight();
                         int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
                         int deleteIconRight = itemView.getRight() - deleteIconMargin;
 
-                        // Draw the delete icon
                         deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
                         deleteIcon.draw(c);
                     }
                 };
                 new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
 
-                //==========================================================================================
-                // This is for Time and Date
-                // Initialize TextViews for displaying current time and date
                 final TextView currentTimeTextView = binding.currentTime;
                 final TextView currentDateTextView = binding.currentDate;
 
-                // Initialize Handler for updating time and date every second
                 handler = new Handler();
                 updateTimeRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        // Get current time and date
                         long currentTimeMillis = System.currentTimeMillis();
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss a", Locale.getDefault());
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
                         String currentTimeString = timeFormat.format(new Date(currentTimeMillis));
                         String currentDateString = dateFormat.format(new Date(currentTimeMillis));
 
-                        // Update TextViews
                         currentTimeTextView.setText("Time: " + currentTimeString);
                         currentDateTextView.setText("Date: " + currentDateString);
 
-                        // Schedule the next update after 1 second
                         handler.postDelayed(this, 1000);
                     }
                 };
 
-                // Start updating time and date
                 handler.post(updateTimeRunnable);
 
                 binding.PP.setOnClickListener(new View.OnClickListener() {
@@ -241,16 +233,24 @@ public class HomeFragment extends Fragment {
 //                        dialog.show();
                     }
                 });
+
             } catch (Exception e) {
-                // Example: Displaying a toast message to the user
                 Toast.makeText(getContext(), "An error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
-            // If not connected, show the no internet connection dialog
             showNoInternetDialog();
         }
 
         return root;
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        fetchCommentData();  // Fetch comments first
+        fetchDataFromFirebase();  // Then fetch other data
     }
 
     // Method to show the loading dialog
@@ -342,9 +342,10 @@ public class HomeFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<Comment> comments = new ArrayList<>();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String commentKey = snapshot.getKey();
                         String commentText = snapshot.child("comment").getValue(String.class);
-                        if (commentText != null) {
-                            comments.add(0, new Comment(commentText));
+                        if (commentText != null && commentKey != null) {
+                            comments.add(0, new Comment(commentKey, commentText));
                         }
                     }
                     if (isAdded() && !isDetached()) {
@@ -494,14 +495,6 @@ public class HomeFragment extends Fragment {
                 hideLoadingDialog(); // Hide loading dialog in case of failure
             }
         });
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        fetchCommentData();  // Fetch comments first
-        fetchDataFromFirebase();  // Then fetch other data
     }
 
     private void showNoInternetDialog() {

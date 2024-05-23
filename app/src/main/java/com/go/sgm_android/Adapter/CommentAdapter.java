@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.go.sgm_android.model.Comment;
 import com.go.sgm_android.R;
+import com.go.sgm_android.model.Comment;
 import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
@@ -37,13 +37,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     public void setComments(List<Comment> comments) {
         this.commentList = comments;
-        notifyDataSetChanged(); // Notify RecyclerView about the data change
+        notifyDataSetChanged();
     }
 
     // Method to remove a comment from the list
     public void removeItem(int position) {
         commentList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    // Method to get the Firebase key of a comment at a specific position
+    public String getCommentKey(int position) {
+        return commentList.get(position).getKey();
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
