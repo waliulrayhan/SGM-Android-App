@@ -7,6 +7,8 @@
     android:backgroundTintMode="src_over"
     android:animateLayoutChanges="true"
     android:scrollbars="none"
+    android:background="#F3F8FF"
+
     tools:context=".AddDistributorActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout

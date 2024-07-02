@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/profile_menu"
-        android:icon="@drawable/user"
+        android:icon="@drawable/light_blub"
         app:showAsAction="always"
         android:title="TODO" />
 </menu>

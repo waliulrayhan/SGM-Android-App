@@ -405,15 +405,15 @@ public class HomeFragment extends Fragment {
                                 if (totalCurrentCapacityValue < totalCurrentDemandValue) {
                                     binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentCapacityValue + " MW");
                                     binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
-                                    binding.frequency.setText("Frequency\n" + frequency + " Hz");
+                                    binding.frequency.setText("Current Frequency\n" + frequency + " Hz");
                                 } else if (totalCurrentCapacityValue > totalCurrentDemandValue) {
                                     binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentDemandValue + " MW");
                                     binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
-                                    binding.frequency.setText("Frequency\n50 Hz");
+                                    binding.frequency.setText("Current Frequency\n50 Hz");
                                 } else {
                                     binding.ppTotalCurrentCapacity.setText("Total Current Capacity\n" + totalCurrentCapacityValue + " MW");
                                     binding.ddTotalCurrentDemand.setText("Total Current Demand\n" + totalCurrentDemandValue + " MW");
-                                    binding.frequency.setText("Frequency\n50 Hz");
+                                    binding.frequency.setText("Current Frequency\n50 Hz");
                                 }
 
                                 hideLoadingDialog(); // Hide loading dialog after data is set
@@ -471,14 +471,16 @@ public class HomeFragment extends Fragment {
                         if (finalHasAlerts) {
                             binding.marquee.setSelected(true);
                             binding.marquee.setText(alertMessage);
+                            binding.marquee.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
                             binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dangerous_24dp_fill0, 0, 0, 0);
-                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
+//                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.red));
                             binding.marquee.setVisibility(View.VISIBLE);
                         } else {
                             binding.marquee.setSelected(true);
                             binding.marquee.setText("Success: All power plant meet the target.               Success: All power plant meet the target.");
+                            binding.marquee.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
                             binding.marquee.setCompoundDrawablesWithIntrinsicBounds(R.drawable.new_releases_24dp_fill0, 0, 0, 0);
-                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+//                            binding.marquee.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
                             binding.marquee.setVisibility(View.VISIBLE);
                         }
 

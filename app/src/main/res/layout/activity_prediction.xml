@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F3F8FF"
     tools:context=".PredictionActivity">
 
     <TextView
@@ -16,8 +17,8 @@
         android:singleLine="true"
         android:padding="10dp"
         android:ellipsize="marquee"
-        android:background="@color/yellow"
-        android:textColor="@color/black"
+        android:background="#F3F8FF"
+        android:textColor="#FF9800"
         android:drawableLeft="@drawable/warning_24dp_fill"
         android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"

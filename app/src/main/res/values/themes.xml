@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/glitter_lake</item>
         <item name="colorPrimaryVariant">@color/hello_summer</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="fontFamily">@font/manroperegular</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/mint_morning</item>
         <item name="colorSecondaryVariant">@color/green_lapis</item>
