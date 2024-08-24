@@ -2,9 +2,11 @@ package com.go.sgm_android;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,10 +17,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.go.sgm_android.Adapter.DistributorAdapter;
 import com.go.sgm_android.Adapter.GridAdapter;
 import com.go.sgm_android.databinding.ActivityGridDetailsBinding;
+import com.go.sgm_android.model.Distributor;
+import com.go.sgm_android.model.Grid;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class GridDetailsActivity extends AppCompatActivity {
@@ -85,6 +95,33 @@ public class GridDetailsActivity extends AppCompatActivity {
     }
 
     private void fetchDataFromFirebase() {
-        
+        DatabaseReference gridRef = FirebaseDatabase.getInstance().getReference().child("SGM").child("Grid");
+        gridRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Grid> grids = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    if (snapshot.exists() && snapshot.hasChild("name") && snapshot.hasChild("nid") && snapshot.hasChild("phone") && snapshot.hasChild("gridtotalCurrentSupply")) {
+                        String name = snapshot.child("name").getValue(String.class);
+                        String nid = snapshot.child("nid").getValue(String.class);
+                        String phone = snapshot.child("phone").getValue(String.class);
+                        float gridtotalCurrentSupply = snapshot.child("gridtotalCurrentSupply").getValue(float.class);
+
+                        if (name != null && nid != null && phone != null) {
+                            Grid grid = new Grid(name, nid, phone, gridtotalCurrentSupply);
+                            grids.add(grid);
+                        }
+                    }
+                }
+                // Update the adapter with the new list of distributors
+                gridAdapter.setGrids(grids);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("MainActivity", "Failed to fetch distributor data from distributorRef: " + databaseError.getMessage());
+            }
+        });
     }
 }

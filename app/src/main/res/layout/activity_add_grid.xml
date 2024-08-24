@@ -29,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:startIconDrawable="@drawable/vertical_distribute">
+            app:startIconDrawable="@drawable/user">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addGridNameEditText"
@@ -51,7 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/AddGridNameTextField"
-            app:startIconDrawable="@drawable/vertical_distribute">
+            app:startIconDrawable="@drawable/driver_license">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addNIDEditText"
@@ -74,7 +74,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/AddNIDTextField"
-            app:startIconDrawable="@drawable/vertical_distribute">
+            app:startIconDrawable="@drawable/telephone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addPhoneNumberEditText"
@@ -97,7 +97,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/AddPhoneNumberTextField"
-            app:startIconDrawable="@drawable/vertical_distribute">
+            app:startIconDrawable="@drawable/address">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addAdressEditText"
@@ -119,7 +119,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/AddAddressTextField"
-            app:startIconDrawable="@drawable/vertical_distribute">
+            app:startIconDrawable="@drawable/information">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addBankDetailsEditText"

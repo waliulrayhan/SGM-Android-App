@@ -121,7 +121,7 @@ public class PredictionActivity extends AppCompatActivity {
                         Prediction powerPlant = new Prediction(selectedName, targetCapacity, totalCapacity);
                         powerPlants.add(powerPlant);
                     }else {
-                        Toast.makeText(PredictionActivity.this, "Not Found.", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(PredictionActivity.this, "Not Found.", Toast.LENGTH_SHORT).show();
                     }
                 }
                 // Now you have all PowerPlant objects from powerPlantRef, update your adapter or UI here

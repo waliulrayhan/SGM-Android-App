@@ -51,7 +51,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridViewHolder
 
         public GridViewHolder(@NonNull View itemView) {
             super(itemView);
-            gridName = itemView.findViewById(R.id.grid_name);
+            gridName = itemView.findViewById(R.id.PP_name);
             gridNID = itemView.findViewById(R.id.grid_nid);
             gridPhone = itemView.findViewById(R.id.grid_phone);
             gridTotalCurrentSupply = itemView.findViewById(R.id.grid_total_current_supply);
