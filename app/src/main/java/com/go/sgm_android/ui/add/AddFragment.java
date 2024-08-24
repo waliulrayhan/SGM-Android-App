@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.go.sgm_android.AddDistributorActivity;
+import com.go.sgm_android.AddGridActivity;
 import com.go.sgm_android.AddPowerPlantActivity;
 import com.go.sgm_android.MainActivity;
 import com.go.sgm_android.R;
@@ -58,6 +59,16 @@ public class AddFragment extends Fragment {
                 public void onClick(View v) {
 //                //                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getContext(), SetTargetActivity.class);
+                    // Start SecondActivity
+                    startActivity(intent);
+                }
+            });
+
+            binding.loginButton4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                //                Toast.makeText(MainActivity.this, "Hello, Add Power Plant", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getContext(), AddGridActivity.class);
                     // Start SecondActivity
                     startActivity(intent);
                 }

@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.go.sgm_android.Adapter.CommentAdapter;
 import com.go.sgm_android.AddCommentActivity;
 import com.go.sgm_android.DistributorListActivity;
+import com.go.sgm_android.GridDetailsActivity;
 import com.go.sgm_android.NetworkUtil;
 import com.go.sgm_android.PowerPlantListActivity;
 import com.go.sgm_android.R;
@@ -171,6 +172,14 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getContext(), DistributorListActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
+                binding.GridDetails.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), GridDetailsActivity.class);
                         startActivity(intent);
                     }
                 });

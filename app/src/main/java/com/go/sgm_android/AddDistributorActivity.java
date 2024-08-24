@@ -165,7 +165,7 @@ public class AddDistributorActivity extends AppCompatActivity {
                     String name = binding.addDistributorEditText.getText().toString().trim();
 
                     if (!distributor.isEmpty() && !zone.isEmpty() && !circle.isEmpty() && !name.isEmpty()) {
-                        Toast.makeText(AddDistributorActivity.this, "Hello "+distributor+zone+circle+name, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(AddDistributorActivity.this, "Hello "+distributor+zone+circle+name, Toast.LENGTH_LONG).show();
                         progressDialog.show();
                         addDistributorToDatabase(distributor, zone, circle, name);
 //                    uploadDDDataToFirebase();

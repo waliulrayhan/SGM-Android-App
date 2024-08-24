@@ -19,6 +19,14 @@
         android:theme="@style/Theme.SGMAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".GridDetailsActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddGridActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.SGMAndroid.Splash">
@@ -31,7 +39,7 @@
         <activity
             android:name=".AddCommentActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

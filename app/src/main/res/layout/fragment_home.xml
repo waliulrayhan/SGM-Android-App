@@ -101,7 +101,7 @@
                     android:backgroundTint="#00FFFFFF"
                     android:clickable="false"
                     android:fontFamily="@font/manroperegular"
-                    android:text="Total Current Capacity\n1141.0 MW"
+                    android:text="Server is currently off."
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     app:cornerRadius="5dp"
@@ -194,7 +194,7 @@
                     android:backgroundTint="#00FFFFFF"
                     android:clickable="false"
                     android:fontFamily="@font/manroperegular"
-                    android:text="Total Current Capacity\n1141.0 MW"
+                    android:text="Server is currently off."
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     app:backgroundTint="#5AB2FF"
@@ -211,7 +211,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card3"
+            android:id="@+id/card4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -222,6 +222,82 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card2">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/text_home1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/manropebold"
+                    android:text="Grid Supply"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/pp_total_current_capacity1"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:height="55dp"
+                    android:backgroundTint="#00FFFFFF"
+                    android:clickable="false"
+                    android:fontFamily="@font/manroperegular"
+                    android:text="Total Grid Supply\n312.67 MW"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:cornerRadius="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_home1"
+                    app:layout_constraintVertical_bias="0.0">
+
+                </com.google.android.material.button.MaterialButton>
+
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/GridDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="#9FDDC4"
+                    android:drawableRight="@drawable/chevron_right_24dp"
+                    android:fontFamily="@font/manropelight"
+                    android:padding="3dp"
+                    android:text="View Details"
+                    android:textColor="@color/black"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/pp_total_current_capacity1" />
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#FFFFFF"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/card4">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -251,7 +327,7 @@
                     android:backgroundTint="#00FFFFFF"
                     android:clickable="false"
                     android:fontFamily="@font/manroperegular"
-                    android:text="Total Current Capacity\n1141.0 MW"
+                    android:text="Server is currently off."
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     app:backgroundTint="#92C7CF"
