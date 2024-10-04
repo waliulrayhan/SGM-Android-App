@@ -27,10 +27,10 @@ Add relevant screenshots here from your app, such as home screens, power plant m
 
 ## Technology Stack
 
-- **Android (Java/Kotlin)**: For the mobile application.
-- **Python (Flask)**: Backend API that provides real-time data to the Android app. Check the [SGM Python API](https://github.com/waliulrayhan/SGM-Python-API) repository for more details.
+- **Android (Java)**: For the mobile application.
+- **Python**: Backend API that provides real-time data to the Android app. Check the [SGM Python API](https://github.com/waliulrayhan/SGM-Python-API) repository for more details.
 - **IoT Devices**: Integration with IoT sensors for real-time energy data collection.
-- **AI/ML**: Used for energy demand predictions and grid failure forecasts.
+- **Machine Learning**: Used for energy demand predictions and grid failure forecasts.
 
 ## Installation
 
@@ -64,7 +64,7 @@ If you have any questions, feel free to contact the project team:
 - **Md. Waliul Islam Rayhan**: [LinkedIn](https://www.linkedin.com/in/waliulrayhan)
 
 ### Team Members:
-- **Nishat Mahmud** (Team Leader)
-- **Md. Waliul Islam Rayhan** (Team Member)
-- **Zinia Afrin** (Team Member)
-- **Md. Mahdi Hasan** (Team Member)
+- **Md. Mahdi Hasan**
+- **Zinia Afrin**
+- **Nishat Mahmud**
+- **Md. Waliul Islam Rayhan**
