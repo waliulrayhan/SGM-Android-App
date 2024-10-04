@@ -23,7 +23,7 @@ The Smart Grid Management (SGM) system aims to modernize the traditional power g
 
 ## Screenshots
 <img src="https://github.com/user-attachments/assets/21f6767d-237f-4a3f-8fcf-fe574d655a49" alt="Screenshot" width="400"/>
-<img src="https://github.com/user-attachments/assets/64e29795-e797-4500-ae0d-dea424386775" alt="Screenshot" width="400"/>
+<img src="https://github.com/user-attachments/assets/64e29795-e797-4500-ae0d-dea424386775" alt="Screenshot" hight="400"/>
 
 ## Technology Stack
 
