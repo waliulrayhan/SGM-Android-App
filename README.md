@@ -1,4 +1,5 @@
-# SGM Android App - IoT Based Smart Grid Management System for Smart City
+<h1 align="center">SGM Android App - IoT Based Smart Grid Management System for Smart City</h1>
+<!-- # SGM Android App - IoT Based Smart Grid Management System for Smart City -->
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
