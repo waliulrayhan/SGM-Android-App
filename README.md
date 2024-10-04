@@ -22,8 +22,7 @@ The Smart Grid Management (SGM) system aims to modernize the traditional power g
 - **Interactive Monitoring**: Real-time dashboard to monitor grid health and performance.
 
 ## Screenshots
-
-Add relevant screenshots here from your app, such as home screens, power plant management screens, distributor lists, etc.
+![1724520843689_100](https://github.com/user-attachments/assets/21f6767d-237f-4a3f-8fcf-fe574d655a49)
 
 ## Technology Stack
 
