@@ -3,6 +3,10 @@
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+### Scan the QR code below to download Smart Grid App directly to your Android device
+![App Download Link](https://github.com/user-attachments/assets/7ce7d097-de15-4572-b729-938bc111b021)
+
+
 This repository contains the source code for the **SGM Android App**, a smart grid management system designed for real-time monitoring, management, and optimization of energy distribution in a smart city using IoT technology. The Android app interfaces with a backend API to provide users with a seamless experience for managing power distribution, monitoring energy flow, and integrating renewable sources.
 
 ## Overview
